@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme.dart';
 import '../models/data.dart';
 import '../widgets/widgets.dart';
+import '../services/auth_service.dart';
 import 'meal_plan_screen.dart';
 import 'progress_screen.dart';
 import 'profile_screen.dart';
@@ -19,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _navIndex = 0;
 
   final List<Widget> _screens = [
-    const _HomeTab(),
+    _HomeTab(),
     const MealPlanScreen(),
     const ProgressScreen(),
     const ProfileScreen(),
@@ -37,8 +38,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _HomeTab extends StatelessWidget {
+class _HomeTab extends StatefulWidget {
   const _HomeTab();
+
+  @override
+  State<_HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<_HomeTab> {
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +73,7 @@ class _HomeTab extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Привет, Анна! 👋',
+                          Text('Привет, ${_authService.currentUser?.displayName ?? 'пользователь'}! 👋',
                               style: GoogleFonts.rubik(
                                   fontSize: 13, color: Colors.white70)),
                           const SizedBox(height: 2),
