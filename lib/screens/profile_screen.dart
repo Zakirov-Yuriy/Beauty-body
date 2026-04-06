@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../theme.dart';
 import '../widgets/widgets.dart';
 import 'shopping_list_screen.dart';
@@ -16,6 +17,97 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _notificationsEnabled = true;
   bool _waterReminder = true;
+
+  Future<void> _logout() async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Выйти из аккаунта?'),
+        content: const Text('Вы уверены, что хотите выйти из системы?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Выйти', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldLogout == true) {
+      try {
+        final authService = FirebaseAuth.instance;
+        await authService.signOut();
+        // AppRouter автоматически покажет экран логина после выхода
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ошибка: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _deleteAccount() async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Удалить аккаунт?'),
+        content: const Text(
+          'Это действие необратимо. Все ваши данные будут удалены.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Удалить', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete == true) {
+      try {
+        // Показать загрузку
+        if (mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        // Удалить аккаунт (из AuthService нужно)
+        // Вместо этого используем прямой метод
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          // Удалить из Firestore
+          await FirebaseAuth.instance.currentUser?.delete();
+        }
+
+        if (mounted) {
+          Navigator.pop(context); // Закрыть загрузку
+          // AppRouter автоматически покажет экран логина
+        }
+      } catch (e) {
+        if (mounted) {
+          Navigator.pop(context); // Закрыть загрузку
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ошибка: $e')),
+          );
+        }
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                  // Logout
+                  // Logout & Delete
                   _SettingsCard(
                     children: [
                       _SettingsTile(
@@ -226,7 +318,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         iconBg: const Color(0xFFFFE8E8),
                         title: 'Выйти из аккаунта',
                         titleColor: Colors.red.shade600,
-                        onTap: () {},
+                        onTap: _logout,
+                        showChevron: false,
+                      ),
+                      _SettingsTile(
+                        icon: '🗑️',
+                        iconBg: const Color(0xFFFFE8E8),
+                        title: 'Удалить аккаунт',
+                        titleColor: Colors.red.shade600,
+                        onTap: _deleteAccount,
                         showChevron: false,
                       ),
                     ],

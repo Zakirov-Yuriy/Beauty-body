@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../theme.dart';
+import '../services/auth_service.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,20 +15,141 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _isLogin = true;
   bool _obscure = true;
+  bool _isLoading = false;
   final _phoneController = TextEditingController();
   final _passController = TextEditingController();
   final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final AuthService _authService = AuthService();
+  String? _errorMessage;
 
-  void _submit() {
-    Navigator.pushReplacement(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const HomeScreen(),
-        transitionsBuilder: (_, anim, __, child) =>
-            FadeTransition(opacity: anim, child: child),
-        transitionDuration: const Duration(milliseconds: 400),
-      ),
-    );
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _passController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_validateForm()) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      if (_isLogin) {
+        // Логин
+        final email = _emailController.text.trim();
+        final password = _passController.text;
+
+        await _authService.loginWithEmail(
+          email: email,
+          password: password,
+        );
+
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => const HomeScreen(),
+              transitionsBuilder: (_, anim, __, child) =>
+                  FadeTransition(opacity: anim, child: child),
+              transitionDuration: const Duration(milliseconds: 400),
+            ),
+          );
+        }
+      } else {
+        // Регистрация
+        final email = _emailController.text.trim();
+        final password = _passController.text;
+        final name = _nameController.text.trim();
+
+        await _authService.registerWithEmail(
+          email: email,
+          password: password,
+          name: name,
+        );
+
+        if (mounted) {
+          // Показываем сообщение об успешной регистрации
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('✅ Аккаунт создан! Войдите в систему'),
+              backgroundColor: Colors.green[600],
+              duration: const Duration(seconds: 3),
+            ),
+          );
+
+          // Очищаем форму
+          _emailController.clear();
+          _passController.clear();
+          _nameController.clear();
+
+          // Переключаемся на режим логина
+          setState(() {
+            _isLogin = true;
+            _errorMessage = null;
+          });
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorMessage = _getErrorMessage(e.code);
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Произошла ошибка: $e';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  bool _validateForm() {
+    if (_isLogin) {
+      if (_emailController.text.isEmpty || _passController.text.isEmpty) {
+        setState(() => _errorMessage = 'Заполните все поля');
+        return false;
+      }
+    } else {
+      if (_nameController.text.isEmpty ||
+          _emailController.text.isEmpty ||
+          _passController.text.isEmpty) {
+        setState(() => _errorMessage = 'Заполните все поля');
+        return false;
+      }
+      if (_passController.text.length < 6) {
+        setState(
+            () => _errorMessage = 'Пароль должен быть не менее 6 символов');
+        return false;
+      }
+    }
+    return true;
+  }
+
+  String _getErrorMessage(String code) {
+    switch (code) {
+      case 'user-not-found':
+        return 'Пользователь не найден';
+      case 'wrong-password':
+        return 'Неверный пароль';
+      case 'email-already-in-use':
+        return 'Этот email уже используется';
+      case 'weak-password':
+        return 'Пароль слишком слабый';
+      case 'invalid-email':
+        return 'Неверный формат email';
+      default:
+        return 'Ошибка: $code';
+    }
   }
 
   @override
@@ -79,17 +202,55 @@ class _LoginScreenState extends State<LoginScreen> {
                     _ToggleBtn(
                       label: 'Войти',
                       isActive: _isLogin,
-                      onTap: () => setState(() => _isLogin = true),
+                      onTap: () {
+                        setState(() {
+                          _isLogin = true;
+                          _errorMessage = null;
+                        });
+                      },
                     ),
                     _ToggleBtn(
                       label: 'Регистрация',
                       isActive: !_isLogin,
-                      onTap: () => setState(() => _isLogin = false),
+                      onTap: () {
+                        setState(() {
+                          _isLogin = false;
+                          _errorMessage = null;
+                        });
+                      },
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
+
+              // Error message
+              if (_errorMessage != null)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.red[100],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red[400]!, width: 1),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _errorMessage!,
+                          style: GoogleFonts.rubik(
+                            fontSize: 13,
+                            color: Colors.red[900],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
               // Fields
               if (!_isLogin) ...[
@@ -97,14 +258,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _nameController,
                   hint: 'Твоё имя',
                   icon: Icons.person_outline_rounded,
+                  enabled: !_isLoading,
                 ),
                 const SizedBox(height: 12),
               ],
               _InputField(
-                controller: _phoneController,
-                hint: 'Номер телефона',
-                icon: Icons.phone_outlined,
-                keyboardType: TextInputType.phone,
+                controller: _emailController,
+                hint: 'Email',
+                icon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+                enabled: !_isLoading,
               ),
               const SizedBox(height: 12),
               _InputField(
@@ -112,8 +275,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 hint: 'Пароль',
                 icon: Icons.lock_outline_rounded,
                 obscure: _obscure,
+                enabled: !_isLoading,
                 suffix: GestureDetector(
-                  onTap: () => setState(() => _obscure = !_obscure),
+                  onTap: _isLoading ? null : () => setState(() => _obscure = !_obscure),
                   child: Icon(
                     _obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                     color: AppColors.textMuted,
@@ -127,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: _isLoading ? null : () {},
                     child: Text('Забыла пароль?',
                         style: GoogleFonts.rubik(
                             fontSize: 13, color: AppColors.greenAccent)),
@@ -139,8 +303,14 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _submit,
-                  child: Text(_isLogin ? 'Войти' : 'Создать аккаунт'),
+                  onPressed: _isLoading ? null : _submit,
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(_isLogin ? 'Войти' : 'Создать аккаунт'),
                 ),
               ),
               const SizedBox(height: 20),
@@ -164,7 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: _submit,
+                  onPressed: _isLoading ? null : () {},
                   icon: const Text('✈️', style: TextStyle(fontSize: 16)),
                   label: Text('Войти через Telegram',
                       style: GoogleFonts.rubik(
@@ -228,6 +398,7 @@ class _InputField extends StatelessWidget {
   final String hint;
   final IconData icon;
   final bool obscure;
+  final bool enabled;
   final TextInputType? keyboardType;
   final Widget? suffix;
 
@@ -236,6 +407,7 @@ class _InputField extends StatelessWidget {
     required this.hint,
     required this.icon,
     this.obscure = false,
+    this.enabled = true,
     this.keyboardType,
     this.suffix,
   });
@@ -245,6 +417,7 @@ class _InputField extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscure,
+      enabled: enabled,
       keyboardType: keyboardType,
       style: GoogleFonts.rubik(fontSize: 14, color: AppColors.textDark),
       decoration: InputDecoration(

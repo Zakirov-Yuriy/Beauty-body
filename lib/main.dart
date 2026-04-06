@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'theme.dart';
-import 'screens/onboarding_screen.dart';
+import 'app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +35,7 @@ class MarathonApp extends StatelessWidget {
       title: 'Марафон похудения',
       theme: appTheme,
       debugShowCheckedModeBanner: false,
-      home: const OnboardingScreen(),
+      home: const AppRouter(),
     );
   }
 }
