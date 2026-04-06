@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../theme.dart';
-import '../services/auth_service.dart';
+import '../presentation/providers/auth_provider.dart';
 import 'home_screen.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isLogin = true;
   bool _obscure = true;
   bool _isLoading = false;
@@ -20,8 +20,37 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passController = TextEditingController();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final AuthService _authService = AuthService();
   String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    // Слушаем изменения state auth для навигации
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.listen(authStateNotifierProvider, (previous, next) {
+        if (next.status == AuthStatus.authenticated) {
+          // Успешная аутентификация - переходим на HomeScreen
+          if (context.mounted) {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(opacity: animation, child: child),
+                transitionDuration: const Duration(milliseconds: 400),
+              ),
+            );
+          }
+        } else if (next.status == AuthStatus.error) {
+          // Ошибка аутентификации
+          setState(() {
+            _isLoading = false;
+            _errorMessage = next.errorMessage;
+          });
+        }
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -40,35 +69,25 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorMessage = null;
     });
 
+    final authNotifier = ref.read(authStateNotifierProvider.notifier);
+
     try {
       if (_isLogin) {
         // Логин
         final email = _emailController.text.trim();
         final password = _passController.text;
 
-        await _authService.loginWithEmail(
+        await authNotifier.loginWithEmail(
           email: email,
           password: password,
         );
-
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (_, __, ___) => const HomeScreen(),
-              transitionsBuilder: (_, anim, __, child) =>
-                  FadeTransition(opacity: anim, child: child),
-              transitionDuration: const Duration(milliseconds: 400),
-            ),
-          );
-        }
       } else {
         // Регистрация
         final email = _emailController.text.trim();
         final password = _passController.text;
         final name = _nameController.text.trim();
 
-        await _authService.registerWithEmail(
+        await authNotifier.registerWithEmail(
           email: email,
           password: password,
           name: name,
@@ -93,25 +112,20 @@ class _LoginScreenState extends State<LoginScreen> {
           setState(() {
             _isLogin = true;
             _errorMessage = null;
+            _isLoading = false;
           });
         }
       }
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _errorMessage = _getErrorMessage(e.code);
-      });
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Произошла ошибка: $e';
-      });
-    } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
+          _errorMessage = 'Ошибка: ${e.toString()}';
         });
       }
     }
   }
+
 
   bool _validateForm() {
     if (_isLogin) {
@@ -133,23 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
     return true;
-  }
-
-  String _getErrorMessage(String code) {
-    switch (code) {
-      case 'user-not-found':
-        return 'Пользователь не найден';
-      case 'wrong-password':
-        return 'Неверный пароль';
-      case 'email-already-in-use':
-        return 'Этот email уже используется';
-      case 'weak-password':
-        return 'Пароль слишком слабый';
-      case 'invalid-email':
-        return 'Неверный формат email';
-      default:
-        return 'Ошибка: $code';
-    }
   }
 
   @override

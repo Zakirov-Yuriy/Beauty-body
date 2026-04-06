@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme.dart';
+import '../presentation/providers/progress_provider.dart';
 
-class ProgressScreen extends StatefulWidget {
+class ProgressScreen extends ConsumerStatefulWidget {
   const ProgressScreen({super.key});
 
   @override
-  State<ProgressScreen> createState() => _ProgressScreenState();
+  ConsumerState<ProgressScreen> createState() => _ProgressScreenState();
 }
 
-class _ProgressScreenState extends State<ProgressScreen> {
-  final List<double> _weights = [72.0, 71.5, 71.0, 70.3, 69.8, 69.2, 68.5];
-  final List<String> _weekLabels = ['Нед 1', '', '', '', '', '', 'Сейчас'];
-
+class _ProgressScreenState extends ConsumerState<ProgressScreen> {
   bool _showMeasurements = true;
 
   @override
   Widget build(BuildContext context) {
-    final maxW = _weights.reduce((a, b) => a > b ? a : b);
-    final minW = _weights.reduce((a, b) => a < b ? a : b);
-    final range = maxW - minW + 1.0;
+    // Watch progress history for the weight chart
+    final progressHistoryAsync = ref.watch(progressHistoryProvider);
+    
+    // Watch today's progress for the "last weight" display
+    final todayProgressAsync = ref.watch(todayProgressProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -53,127 +54,244 @@ class _ProgressScreenState extends State<ProgressScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Weight chart card
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.greenBorder, width: 0.5),
+                // Weight chart card - with .when() pattern
+                progressHistoryAsync.when(
+                  loading: () => Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.greenBorder, width: 0.5),
+                    ),
+                    child: const SizedBox(
+                      height: 160,
+                      child: Center(
+                        child: CircularProgressIndicator(color: AppColors.greenMid),
+                      ),
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  error: (err, stack) => Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.greenBorder, width: 0.5),
+                    ),
+                    child: Column(
+                      children: [
+                        const Icon(Icons.error_outline_rounded,
+                            color: AppColors.textMuted, size: 40),
+                        const SizedBox(height: 12),
+                        Text('Ошибка загрузки данных',
+                            style: GoogleFonts.rubik(
+                                fontSize: 13, color: AppColors.textDark)),
+                        const SizedBox(height: 12),
+                        OutlinedButton(
+                          onPressed: () => ref.refresh(progressHistoryProvider),
+                          child: const Text('Повторить'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  data: (progressList) {
+                    if (progressList.isEmpty) {
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.greenBorder, width: 0.5),
+                        ),
+                        child: const SizedBox(
+                          height: 160,
+                          child: Center(
+                            child: Text('Данные о весе отсутствуют'),
+                          ),
+                        ),
+                      );
+                    }
+
+                    // Extract weights from ProgressEntity list
+                    final weights = progressList.map((p) => p.weight).toList();
+                    final weekLabels = <String>[
+                      'Нед 1',
+                      ...List<String>.filled(weights.length - 2, ''),
+                      'Сейчас'
+                    ];
+                    
+                    final maxW = weights.reduce((a, b) => a > b ? a : b);
+                    final minW = weights.reduce((a, b) => a < b ? a : b);
+                    final range = maxW - minW + 1.0;
+
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.greenBorder, width: 0.5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Динамика веса (кг)',
-                              style: GoogleFonts.rubik(
-                                  fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: AppColors.greenCard,
-                              borderRadius: BorderRadius.circular(8),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Динамика веса (кг)',
+                                  style: GoogleFonts.rubik(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textDark)),
+                              Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: AppColors.greenCard,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text('${weights.length} дней',
+                                    style: GoogleFonts.rubik(
+                                        fontSize: 11,
+                                        color: AppColors.greenMid,
+                                        fontWeight: FontWeight.w500)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            height: 120,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: weights.asMap().entries.map((entry) {
+                                final barH =
+                                    ((entry.value - minW + 0.5) / range) * 100 + 20;
+                                final isLast = entry.key == weights.length - 1;
+                                return Expanded(
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(horizontal: 3),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.end,
+                                      children: [
+                                        if (isLast)
+                                          Text(
+                                            '${entry.value}',
+                                            style: GoogleFonts.rubik(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w700,
+                                                color: AppColors.greenMid),
+                                          ),
+                                        const SizedBox(height: 2),
+                                        AnimatedContainer(
+                                          duration:
+                                              const Duration(milliseconds: 600),
+                                          height: barH,
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: isLast
+                                                  ? [
+                                                      AppColors.greenDark,
+                                                      AppColors.greenLight
+                                                    ]
+                                                  : [
+                                                      AppColors.greenCard,
+                                                      AppColors.greenBorder
+                                                    ],
+                                              begin: Alignment.bottomCenter,
+                                              end: Alignment.topCenter,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          weekLabels[entry.key],
+                                          style: GoogleFonts.rubik(
+                                              fontSize: 9,
+                                              color: AppColors.textMuted),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
                             ),
-                            child: Text('8 дней',
-                                style: GoogleFonts.rubik(
-                                    fontSize: 11, color: AppColors.greenMid, fontWeight: FontWeight.w500)),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        height: 120,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: _weights.asMap().entries.map((entry) {
-                            final barH = ((entry.value - minW + 0.5) / range) * 100 + 20;
-                            final isLast = entry.key == _weights.length - 1;
-                            return Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 3),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    if (isLast)
-                                      Text(
-                                        '${entry.value}',
-                                        style: GoogleFonts.rubik(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w700,
-                                            color: AppColors.greenMid),
-                                      ),
-                                    const SizedBox(height: 2),
-                                    AnimatedContainer(
-                                      duration: const Duration(milliseconds: 600),
-                                      height: barH,
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: isLast
-                                              ? [AppColors.greenDark, AppColors.greenLight]
-                                              : [AppColors.greenCard, AppColors.greenBorder],
-                                          begin: Alignment.bottomCenter,
-                                          end: Alignment.topCenter,
-                                        ),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      _weekLabels[entry.key],
-                                      style: GoogleFonts.rubik(
-                                          fontSize: 9, color: AppColors.textMuted),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
 
                 // Weight entry
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.greenBorder, width: 0.5),
+                todayProgressAsync.when(
+                  loading: () => Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.greenBorder, width: 0.5),
+                    ),
+                    child: const SizedBox(height: 60),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Внести вес сегодня',
-                                style: GoogleFonts.rubik(
-                                    fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
-                            Text('Последний: 68.5 кг',
-                                style: GoogleFonts.rubik(fontSize: 12, color: AppColors.textMuted)),
-                          ],
-                        ),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => _showWeightDialog(context),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        ),
-                        child: const Text('+ Добавить'),
-                      ),
-                    ],
+                  error: (err, stack) => Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.greenBorder, width: 0.5),
+                    ),
+                    child: Text('Ошибка загрузки',
+                        style: GoogleFonts.rubik(color: AppColors.textMuted)),
                   ),
+                  data: (progress) {
+                    final lastWeight = progress?.weight ?? 68.5;
+                    return Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border:
+                            Border.all(color: AppColors.greenBorder, width: 0.5),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Внести вес сегодня',
+                                    style: GoogleFonts.rubik(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.textDark)),
+                                Text('Последний: $lastWeight кг',
+                                    style: GoogleFonts.rubik(
+                                        fontSize: 12, color: AppColors.textMuted)),
+                              ],
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => _showWeightDialog(context, ref),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                            ),
+                            child: const Text('+ Добавить'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
 
                 // Measurements toggle
                 GestureDetector(
-                  onTap: () => setState(() => _showMeasurements = !_showMeasurements),
+                  onTap: () =>
+                      setState(() => _showMeasurements = !_showMeasurements),
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -188,7 +306,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
                           children: [
                             Text('Замеры тела (см)',
                                 style: GoogleFonts.rubik(
-                                    fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textDark)),
                             Icon(
                               _showMeasurements
                                   ? Icons.keyboard_arrow_up_rounded
@@ -207,12 +327,13 @@ class _ProgressScreenState extends State<ProgressScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: OutlinedButton.icon(
-                              onPressed: () {},
+                              onPressed: () => _showMeasurementsDialog(context, ref),
                               icon: const Icon(Icons.add, size: 16),
                               label: const Text('Обновить замеры'),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppColors.greenMid,
-                                side: const BorderSide(color: AppColors.greenBorder),
+                                side: const BorderSide(
+                                    color: AppColors.greenBorder),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20)),
                               ),
@@ -238,7 +359,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
                     children: [
                       Text('Достижения',
                           style: GoogleFonts.rubik(
-                              fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textDark)),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -262,7 +385,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
     );
   }
 
-  void _showWeightDialog(BuildContext context) {
+  void _showWeightDialog(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -282,10 +406,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
           children: [
             Text('Внести вес',
                 style: GoogleFonts.rubik(
-                    fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textDark)),
             const SizedBox(height: 16),
             TextField(
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              controller: controller,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
                 hintText: '68.5',
                 suffixText: 'кг',
@@ -297,7 +425,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.greenMid),
+                  borderSide:
+                      const BorderSide(color: AppColors.greenMid),
                 ),
               ),
             ),
@@ -305,7 +434,79 @@ class _ProgressScreenState extends State<ProgressScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () async {
+                  final weight = double.tryParse(controller.text);
+                  if (weight != null) {
+                    // Call the weight entry notifier
+                    await ref
+                        .read(weightEntryProvider.notifier)
+                        .addWeight(weight);
+                    Navigator.pop(context);
+                  }
+                },
+                child: const Text('Сохранить'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showMeasurementsDialog(BuildContext context, WidgetRef ref) {
+    final controllers = {
+      'waist': TextEditingController(),
+      'hips': TextEditingController(),
+      'chest': TextEditingController(),
+      'belly': TextEditingController(),
+    };
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.white,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => Padding(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Обновить замеры',
+                style: GoogleFonts.rubik(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textDark)),
+            const SizedBox(height: 16),
+            _MeasurementField(controllers['waist']!, 'Талия', 'см'),
+            _MeasurementField(controllers['hips']!, 'Бёдра', 'см'),
+            _MeasurementField(controllers['chest']!, 'Грудь', 'см'),
+            _MeasurementField(controllers['belly']!, 'Живот', 'см'),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  final measurements = {
+                    'waist': double.tryParse(controllers['waist']!.text),
+                    'hips': double.tryParse(controllers['hips']!.text),
+                    'chest': double.tryParse(controllers['chest']!.text),
+                    'belly': double.tryParse(controllers['belly']!.text),
+                  };
+
+                  if (measurements.values.every((v) => v != null)) {
+                    ref
+                        .read(measurementsProvider.notifier)
+                        .updateMeasurements(measurements.cast<String, double>());
+                    Navigator.pop(context);
+                  }
+                },
                 child: const Text('Сохранить'),
               ),
             ),
@@ -417,6 +618,40 @@ class _AchievementBadge extends StatelessWidget {
                     color: unlocked ? AppColors.greenMid : AppColors.textMuted,
                     fontWeight: FontWeight.w500)),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MeasurementField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final String suffix;
+
+  const _MeasurementField(this.controller, this.label, this.suffix);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextField(
+        controller: controller,
+        keyboardType:
+            const TextInputType.numberWithOptions(decimal: true),
+        decoration: InputDecoration(
+          labelText: label,
+          suffixText: suffix,
+          filled: true,
+          fillColor: AppColors.greenSurface,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: AppColors.greenMid),
+          ),
         ),
       ),
     );

@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme.dart';
-import '../models/data.dart';
 
-class RecipeDetailScreen extends StatelessWidget {
-  final MealItem meal;
+class RecipeDetailScreen extends ConsumerWidget {
+  final dynamic meal; // Can be MealItem or MealEntity
   const RecipeDetailScreen({super.key, required this.meal});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Color> mealTypeColors = [
-      AppColors.breakfastBg,
-      AppColors.lunchBg,
-      AppColors.snackBg,
-      AppColors.dinnerBg,
-    ];
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Get common properties whether it's MealItem or MealEntity
+    final mealName = meal.name as String;
+    final mealType = meal.type as String;
+    final emoji = meal.emoji as String;
+    final portion = meal.portion as String;
+    final extra = meal.extra as String? ?? '';
+    final calories = (meal.calories as int?) ?? 0;
+    final protein = (meal.protein as int?) ?? 0;
+    final carbs = (meal.carbs as int?) ?? 0;
+    final fat = (meal.fat as int?) ?? 0;
+    final ingredients = (meal.ingredients as List?) ?? [];
+    final steps = (meal.steps as List?) ?? [];
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -49,7 +55,7 @@ class RecipeDetailScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 40),
-                    Text(meal.emoji, style: const TextStyle(fontSize: 72)),
+                    Text(emoji, style: const TextStyle(fontSize: 72)),
                     const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -57,14 +63,14 @@ class RecipeDetailScreen extends StatelessWidget {
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text(meal.type,
+                      child: Text(mealType,
                           style: GoogleFonts.rubik(
                               fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.white)),
                     ),
                   ],
                 ),
               ),
-              title: Text(meal.name,
+              title: Text(mealName,
                   style: GoogleFonts.rubik(
                       fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.white)),
             ),
@@ -87,13 +93,13 @@ class RecipeDetailScreen extends StatelessWidget {
                       children: [
                         const Icon(Icons.scale_rounded, color: AppColors.greenAccent, size: 18),
                         const SizedBox(width: 8),
-                        Text('Порция: ${meal.portion}',
+                        Text('Порция: $portion',
                             style: GoogleFonts.rubik(
                                 fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.greenDark)),
-                        if (meal.extra.isNotEmpty) ...[
+                        if (extra.isNotEmpty) ...[
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text('+ ${meal.extra}',
+                            child: Text('+ $extra',
                                 style: GoogleFonts.rubik(fontSize: 12, color: AppColors.textMuted),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis),
@@ -105,62 +111,68 @@ class RecipeDetailScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // КБЖУ
-                  if (meal.calories > 0) ...[
+                  if (calories > 0) ...[
                     _SectionHeader('Пищевая ценность'),
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        _NutrientBox('${meal.calories}', 'ккал', AppColors.orangeLight, AppColors.orange),
+                        _NutrientBox('$calories', 'ккал', AppColors.orangeLight, AppColors.orange),
                         const SizedBox(width: 8),
-                        _NutrientBox('${meal.protein}г', 'белки', const Color(0xFFE8F0FF), const Color(0xFF185FA5)),
+                        _NutrientBox('${protein}г', 'белки', const Color(0xFFE8F0FF), const Color(0xFF185FA5)),
                         const SizedBox(width: 8),
-                        _NutrientBox('${meal.carbs}г', 'углев.', AppColors.breakfastBg, const Color(0xFFB25000)),
+                        _NutrientBox('${carbs}г', 'углев.', AppColors.breakfastBg, const Color(0xFFB25000)),
                         const SizedBox(width: 8),
-                        _NutrientBox('${meal.fat}г', 'жиры', const Color(0xFFE8F5D0), AppColors.greenMid),
+                        _NutrientBox('${fat}г', 'жиры', const Color(0xFFE8F5D0), AppColors.greenMid),
                       ],
                     ),
                     const SizedBox(height: 20),
                   ],
 
                   // Ingredients
-                  if (meal.ingredients.isNotEmpty) ...[
+                  if (ingredients.isNotEmpty) ...[
                     _SectionHeader('Ингредиенты'),
                     const SizedBox(height: 10),
-                    ...meal.ingredients.map((ing) => Container(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          decoration: const BoxDecoration(
+                    ...ingredients.asMap().entries.map((entry) {
+                      final ing = entry.value;
+                      final name = ing is String ? ing : (ing as dynamic).name ?? '';
+                      final amount = (ing as dynamic).amount ?? '';
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: const BoxDecoration(
                             border: Border(
                                 bottom: BorderSide(color: AppColors.greenSurface, width: 1)),
-                          ),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 6,
-                                height: 6,
-                                decoration: const BoxDecoration(
-                                    color: AppColors.greenLight, shape: BoxShape.circle),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                  child: Text(ing.name,
-                                      style: GoogleFonts.rubik(
-                                          fontSize: 14, color: AppColors.textDark))),
-                              Text(ing.amount,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                  color: AppColors.greenLight, shape: BoxShape.circle),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                                child: Text(name,
+                                    style: GoogleFonts.rubik(
+                                        fontSize: 14, color: AppColors.textDark))),
+                            if (amount.isNotEmpty)
+                              Text(amount,
                                   style: GoogleFonts.rubik(
                                       fontSize: 13,
                                       color: AppColors.greenAccent,
                                       fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        )),
+                          ],
+                        ),
+                      );
+                    }),
                     const SizedBox(height: 20),
                   ],
 
                   // Steps
-                  if (meal.steps.isNotEmpty) ...[
+                  if (steps.isNotEmpty) ...[
                     _SectionHeader('Приготовление'),
                     const SizedBox(height: 12),
-                    ...meal.steps.asMap().entries.map((entry) => Padding(
+                    ...steps.asMap().entries.map((entry) => Padding(
                           padding: const EdgeInsets.only(bottom: 14),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +194,7 @@ class RecipeDetailScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: Text(entry.value,
+                                child: Text(entry.value as String,
                                     style: GoogleFonts.rubik(
                                         fontSize: 14,
                                         color: AppColors.textDark,
