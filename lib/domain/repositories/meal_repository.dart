@@ -15,4 +15,13 @@ abstract class MealRepository {
 
   /// Получить блюда по дате
   Future<List<MealEntity>> getMealsByDate(DateTime date);
+
+  /// Добавить новое блюдо
+  Future<void> addMeal(MealEntity meal);
+
+  /// Обновить storagePath для блюда (для изображений из Firebase Storage)
+  Future<void> updateMealStoragePath({
+    required String mealId,
+    required String storagePath,
+  });
 }

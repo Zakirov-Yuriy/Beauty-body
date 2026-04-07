@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme.dart';
+import '../presentation/providers/storage_provider.dart';
+import '../presentation/providers/portion_provider.dart';
+import '../presentation/providers/eaten_meals_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../core/utils/meal_translations.dart';
 
 // ─────────────────────────────────────────
 // BOTTOM NAVIGATION BAR
@@ -102,7 +107,8 @@ class GreenHeader extends StatelessWidget {
 // ─────────────────────────────────────────
 // MEAL CARD (small)
 // ─────────────────────────────────────────
-class MealCard extends StatelessWidget {
+class MealCard extends ConsumerWidget {
+  final String mealId;
   final String emoji;
   final String type;
   final String name;
@@ -110,10 +116,13 @@ class MealCard extends StatelessWidget {
   final Color emojiBackground;
   final bool isDone;
   final String? timeLabel;
+  final String imageAssetPath;
+  final List<Map<String, dynamic>> portionSizes;
   final VoidCallback? onTap;
 
   const MealCard({
     super.key,
+    required this.mealId,
     required this.emoji,
     required this.type,
     required this.name,
@@ -121,34 +130,49 @@ class MealCard extends StatelessWidget {
     required this.emojiBackground,
     this.isDone = false,
     this.timeLabel,
+    this.imageAssetPath = '',
+    this.portionSizes = const [],
     this.onTap,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Получаем выбранный размер порции для этого блюда
+    final selectedPortionIndex = ref.watch(selectedPortionIndexProvider(mealId));
+    
+    // Проверяем, съедено ли блюдо
+    final isMealEaten = ref.watch(isMealEatenProvider(mealId));
+    
+    // Вычисляем какой размер показать
+    late String displayPortion;
+    if (portionSizes.isNotEmpty && selectedPortionIndex < portionSizes.length) {
+      final selectedPortion = portionSizes[selectedPortionIndex] as Map<String, dynamic>;
+      final grams = selectedPortion['grams'] as String? ?? portion;
+      final label = selectedPortion['label'] as String? ?? '';
+      displayPortion = '$grams $label';
+    } else {
+      displayPortion = portion;
+    }
+    
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: AppColors.greenBorder, width: 0.5),
         ),
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(color: emojiBackground, borderRadius: BorderRadius.circular(12)),
-              child: Center(child: Text(emoji, style: const TextStyle(fontSize: 22))),
-            ),
+            // Картинка или эмодзи
+            _buildImageContainer(context, ref),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(type,
+                  Text(translateMealType(type),
                       style: GoogleFonts.rubik(
                           fontSize: 11, color: AppColors.textMuted, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 2),
@@ -156,12 +180,12 @@ class MealCard extends StatelessWidget {
                       style: GoogleFonts.rubik(
                           fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
                   const SizedBox(height: 2),
-                  Text(portion,
+                  Text(displayPortion,
                       style: GoogleFonts.rubik(fontSize: 12, color: AppColors.textMuted)),
                 ],
               ),
             ),
-            if (isDone)
+            if (isMealEaten)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
@@ -190,6 +214,45 @@ class MealCard extends StatelessWidget {
       ),
     );
   }
+
+  /// Построение контейнера с изображением или эмодзи
+  Widget _buildImageContainer(BuildContext context, WidgetRef ref) {
+    if (imageAssetPath.isEmpty) {
+      // Просто эмодзи, если imageAssetPath не установлен
+      return Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: emojiBackground,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(child: Text(emoji, style: const TextStyle(fontSize: 22))),
+      );
+    }
+
+    // Используем локальный asset с обработкой ошибок
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: emojiBackground,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.asset(
+          imageAssetPath,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Если изображение не найдено, показываем эмодзи
+            return Center(
+              child: Text(emoji, style: const TextStyle(fontSize: 22)),
+            );
+          },
+        ),
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────
@@ -208,7 +271,7 @@ class StatBox extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
           color: AppColors.greenSurface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           children: [

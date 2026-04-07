@@ -12,6 +12,8 @@ class MealEntity {
   final List<String> ingredients;
   final List<String> steps;
   final String description;
+  final String imageAssetPath; // путь к картинке в assets (например: assets/meals/stage_1/week_1/day_1/breakfast_1.png)
+  final List<Map<String, dynamic>> portionSizes; // Варианты размеров порции [{label, grams, calories, protein, carbs, fat}]
   final DateTime createdAt;
 
   const MealEntity({
@@ -28,6 +30,8 @@ class MealEntity {
     this.ingredients = const [],
     this.steps = const [],
     this.description = '',
+    this.imageAssetPath = '',
+    this.portionSizes = const [],
     required this.createdAt,
   });
 
@@ -45,6 +49,8 @@ class MealEntity {
     List<String>? ingredients,
     List<String>? steps,
     String? description,
+    String? imageAssetPath,
+    List<Map<String, dynamic>>? portionSizes,
     DateTime? createdAt,
   }) {
     return MealEntity(
@@ -61,6 +67,8 @@ class MealEntity {
       ingredients: ingredients ?? this.ingredients,
       steps: steps ?? this.steps,
       description: description ?? this.description,
+      imageAssetPath: imageAssetPath ?? this.imageAssetPath,
+      portionSizes: portionSizes ?? this.portionSizes,
       createdAt: createdAt ?? this.createdAt,
     );
   }

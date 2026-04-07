@@ -23,36 +23,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String? _errorMessage;
 
   @override
-  void initState() {
-    super.initState();
-    // Слушаем изменения state auth для навигации
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.listen(authStateNotifierProvider, (previous, next) {
-        if (next.status == AuthStatus.authenticated) {
-          // Успешная аутентификация - переходим на HomeScreen
-          if (context.mounted) {
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
-                transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-                    FadeTransition(opacity: animation, child: child),
-                transitionDuration: const Duration(milliseconds: 400),
-              ),
-            );
-          }
-        } else if (next.status == AuthStatus.error) {
-          // Ошибка аутентификации
-          setState(() {
-            _isLoading = false;
-            _errorMessage = next.errorMessage;
-          });
-        }
-      });
-    });
-  }
-
-  @override
   void dispose() {
     _phoneController.dispose();
     _passController.dispose();
@@ -151,6 +121,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Слушаем изменения state auth для навигации
+    ref.listen(authStateNotifierProvider, (previous, next) {
+      if (next.status == AuthStatus.authenticated) {
+        // Успешная аутентификация - переходим на HomeScreen
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+                  FadeTransition(opacity: animation, child: child),
+              transitionDuration: const Duration(milliseconds: 400),
+            ),
+          );
+        }
+      } else if (next.status == AuthStatus.error) {
+        // Ошибка аутентификации
+        setState(() {
+          _isLoading = false;
+          _errorMessage = next.errorMessage;
+        });
+      }
+    });
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(

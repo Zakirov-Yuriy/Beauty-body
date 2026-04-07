@@ -99,4 +99,20 @@ class MockMealDataSource implements MealDataSource {
     // В реальном приложении запросим из Firestore по дате
     return mockMeals;
   }
+
+  @override
+  Future<void> addMeal(MealEntity meal) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    mockMeals.add(meal);
+    print('✅ Блюдо добавлено: ${meal.name}');
+  }
+
+  @override
+  Future<void> updateMealStoragePath({
+    required String mealId,
+    required String storagePath,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    print('✅ Mock: storagePath обновлен для $mealId');
+  }
 }

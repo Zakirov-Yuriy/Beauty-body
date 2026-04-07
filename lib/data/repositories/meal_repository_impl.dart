@@ -23,4 +23,17 @@ class MealRepositoryImpl implements MealRepository {
   @override
   Future<List<MealEntity>> getMealsByDate(DateTime date) =>
       _dataSource.getMealsByDate(date);
+
+  @override
+  Future<void> addMeal(MealEntity meal) => _dataSource.addMeal(meal);
+
+  @override
+  Future<void> updateMealStoragePath({
+    required String mealId,
+    required String storagePath,
+  }) =>
+      _dataSource.updateMealStoragePath(
+        mealId: mealId,
+        storagePath: storagePath,
+      );
 }

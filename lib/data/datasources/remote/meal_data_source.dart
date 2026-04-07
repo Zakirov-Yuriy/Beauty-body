@@ -6,4 +6,9 @@ abstract class MealDataSource {
   Future<List<MealEntity>> getMealsByType(String type);
   Stream<List<MealEntity>> getTodayMeals();
   Future<List<MealEntity>> getMealsByDate(DateTime date);
+  Future<void> addMeal(MealEntity meal);
+  Future<void> updateMealStoragePath({
+    required String mealId,
+    required String storagePath,
+  });
 }

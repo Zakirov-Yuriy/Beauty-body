@@ -5,7 +5,6 @@ import 'meal_plan_data_source.dart';
 
 class MockMealPlanDataSource implements MealPlanDataSource {
   final _mealDataSource = MockMealDataSource();
-
   final List<MealPlanEntity> mockPlans = [];
 
   MockMealPlanDataSource() {

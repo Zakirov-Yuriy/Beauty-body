@@ -1,11 +1,36 @@
 import 'meal_entity.dart';
 
+class MealPlanDay {
+  final String day;
+  final List<String> meals; // IDs из коллекции /meals
+
+  const MealPlanDay({
+    required this.day,
+    required this.meals,
+  });
+
+  factory MealPlanDay.fromJson(Map<String, dynamic> json) {
+    return MealPlanDay(
+      day: json['day'] ?? '',
+      meals: List<String>.from(json['meals'] ?? []),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'day': day,
+      'meals': meals,
+    };
+  }
+}
+
+/// Структура для UI (используется в приложении)
 class MealPlanEntity {
   final String id;
   final String userId;
   final int weekNumber;
   final int stageNumber;
-  final Map<int, List<MealEntity>> dailyMeals; // день недели -> список блюд
+  final Map<int, List<MealEntity>> dailyMeals; // день недели -> список блюд (для UI)
   final Map<String, dynamic> dailyGoals; // калории, белки, углеводы, жиры
   final DateTime startDate;
   final DateTime endDate;

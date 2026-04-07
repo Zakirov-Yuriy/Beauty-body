@@ -1,0 +1,157 @@
+[
+  {
+    "name": "projects/beauty-body-86d4e/databases/(default)/documents/mealPlans/plan_1",
+    "fields": {
+      "id": {
+        "stringValue": "plan_1"
+      },
+      "name": {
+        "stringValue": "Weekly Fitness Plan"
+      },
+      "userId": {
+        "stringValue": "pYRoEkcCl1RGPskm9U3obveeloJ2"
+      },
+      "startDate": {
+        "stringValue": "2026-04-07"
+      },
+      "days": {
+        "arrayValue": {
+          "values": [
+            {
+              "mapValue": {
+                "fields": {
+                  "day": {
+                    "stringValue": "Monday"
+                  },
+                  "meals": {
+                    "arrayValue": {
+                      "values": [
+                        {"stringValue": "meal_1"},
+                        {"stringValue": "meal_2"},
+                        {"stringValue": "meal_3"}
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "day": {
+                    "stringValue": "Tuesday"
+                  },
+                  "meals": {
+                    "arrayValue": {
+                      "values": [
+                        {"stringValue": "meal_2"},
+                        {"stringValue": "meal_3"},
+                        {"stringValue": "meal_1"}
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "day": {
+                    "stringValue": "Wednesday"
+                  },
+                  "meals": {
+                    "arrayValue": {
+                      "values": [
+                        {"stringValue": "meal_1"},
+                        {"stringValue": "meal_2"},
+                        {"stringValue": "meal_4"}
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "day": {
+                    "stringValue": "Thursday"
+                  },
+                  "meals": {
+                    "arrayValue": {
+                      "values": [
+                        {"stringValue": "meal_3"},
+                        {"stringValue": "meal_1"},
+                        {"stringValue": "meal_2"}
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "day": {
+                    "stringValue": "Friday"
+                  },
+                  "meals": {
+                    "arrayValue": {
+                      "values": [
+                        {"stringValue": "meal_2"},
+                        {"stringValue": "meal_4"},
+                        {"stringValue": "meal_1"}
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "day": {
+                    "stringValue": "Saturday"
+                  },
+                  "meals": {
+                    "arrayValue": {
+                      "values": [
+                        {"stringValue": "meal_1"},
+                        {"stringValue": "meal_3"},
+                        {"stringValue": "meal_4"}
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "mapValue": {
+                "fields": {
+                  "day": {
+                    "stringValue": "Sunday"
+                  },
+                  "meals": {
+                    "arrayValue": {
+                      "values": [
+                        {"stringValue": "meal_4"},
+                        {"stringValue": "meal_2"},
+                        {"stringValue": "meal_3"}
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "createdAt": {
+        "timestampValue": "2026-04-07T00:00:00Z"
+      },
+      "updatedAt": {
+        "timestampValue": "2026-04-07T00:00:00Z"
+      }
+    }
+  }
+]

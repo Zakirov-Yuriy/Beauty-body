@@ -41,3 +41,13 @@ final mealsByDateProvider = FutureProviderFamily<List<MealEntity>, DateTime>((re
   final repository = ref.watch(mealRepositoryProvider);
   return await repository.getMealsByDate(date);
 });
+
+/// Функция для добавления нового блюда
+final addMealProvider = FutureProvider.family<void, MealEntity>((ref, meal) async {
+  final repository = ref.watch(mealRepositoryProvider);
+  await repository.addMeal(meal);
+  
+  // Обновляем список блюд после добавления
+  ref.invalidate(allMealsProvider);
+  ref.invalidate(todayMealsProvider);
+});
