@@ -43,20 +43,12 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    return Material(
+      color: Color(0xFFECEAD7),
+      child: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFECEAD7),
-              Color(0xFFECEAD7),
-            ],
-          ),
-        ),
+        color: Color(0xFFECEAD7),
         child: Center(
           child: FadeTransition(
             opacity: _fadeAnimation,
@@ -68,15 +60,15 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget>
                   // Логотип или иконка приложения
                   Padding(
                     padding: const EdgeInsets.only(top: 180),
-                    child: Container(
-                      width: 150,
-                      height: 150,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Image.asset(
-                        'assets/1024.png',
-                        fit: BoxFit.contain,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: SizedBox(
+                        width: 200,
+                        height: 200,
+                        child: Image.asset(
+                          'assets/splash_screen_widget.png',
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),

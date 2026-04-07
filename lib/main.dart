@@ -36,6 +36,7 @@ class MarathonApp extends StatelessWidget {
       title: 'Марафон похудения',
       theme: appTheme,
       debugShowCheckedModeBanner: false,
+      color: AppColors.background,
       home: const AppRouter(),
     );
   }

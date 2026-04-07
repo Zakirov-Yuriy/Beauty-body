@@ -34,7 +34,7 @@ ThemeData get appTheme => ThemeData(
         surface: AppColors.white,
         background: AppColors.background,
       ),
-      scaffoldBackgroundColor: const Color.fromARGB(255, 126, 219, 11),
+      scaffoldBackgroundColor: AppColors.background,
       textTheme: GoogleFonts.rubikTextTheme().copyWith(
         displayLarge: GoogleFonts.rubik(
           fontSize: 28,
