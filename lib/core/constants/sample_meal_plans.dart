@@ -20,12 +20,7 @@ class SampleMealPlans {
       weekNumber: weekNumber,
       stageNumber: stageNumber,
       dailyMeals: dailyMeals,
-      dailyGoals: {
-        'calories': 2000,
-        'protein': 150,
-        'carbs': 200,
-        'fat': 70,
-      },
+      dailyGoals: {'calories': 2000, 'protein': 150, 'carbs': 200, 'fat': 70},
       startDate: startDate,
       endDate: endDate,
       isActive: weekNumber == 1,
@@ -52,19 +47,60 @@ class SampleMealPlans {
         SampleMeals.meatballsDinnerMeal,
         SampleMeals.greenSaladDinnerMeal,
         SampleMeals.layeredDessertMeal,
-        SampleMeals.summerSaladMeal,
-        SampleMeals.stuffedZucchiniMeal,
+        SampleMeals.summerSaladDinnerMeal,
+        SampleMeals.stuffedZucchiniDinnerMeal,
       ],
       // Среда (2)
-      2: [],
+      2: [
+        SampleMeals.ppRollsMeal,
+        SampleMeals.condensedMilkMeal,
+        SampleMeals.confitureMeal,
+        SampleMeals.stuffedZucchiniMeal,
+        SampleMeals.summerSaladMeal,
+        SampleMeals.lavashChipsMeal,
+        SampleMeals.chickenBreastMeal,
+        SampleMeals.bakedVeggiesMeal,
+        SampleMeals.adjikaMeal,
+      ],
       // Четверг (3)
-      3: [],
+      3: [
+        SampleMeals.ppRollsMeal,
+        SampleMeals.condensedMilkMeal,
+        SampleMeals.confitureMeal,
+        SampleMeals.chickenBreastLunchMeal,
+        SampleMeals.bakedVeggiesMealLunch,
+        SampleMeals.adjikaMealLunch,
+        SampleMeals.glazedCurdSnack,
+        SampleMeals.syrnikiMeal,
+      ],
       // Пятница (4)
-      4: [],
+      4: [
+        SampleMeals.syrnikiBreakfastMeal,
+        SampleMeals.condensedMilkMeal,
+        SampleMeals.confitureMeal,
+        SampleMeals.beanBorschtMeal,
+        SampleMeals.summerSaladMeal,
+        SampleMeals.curdJellySnack,
+        SampleMeals.georgianSaladMeal,
+      ],
       // Суббота (5)
-      5: [],
+      5: [
+        SampleMeals.dietBelyashiMeal,
+        SampleMeals.fitSteakMeal,
+        SampleMeals.detoxSaladMeal,
+        SampleMeals.darkChocolateSnack,
+        SampleMeals.chickpeaPilafMeal,
+        SampleMeals.brushSaladMeal,
+      ],
       // Воскресенье (6)
       6: [
+        SampleMeals.cheesecakeMeal,
+        SampleMeals.confitureMeal,
+        SampleMeals.condensedMilkMeal,
+        SampleMeals.chickenKebabMeal,
+        SampleMeals.smokeSaladMeal,
+        SampleMeals.appleSnackMeal,
+        SampleMeals.proteinShakeMeal,
       ],
     },
   );
@@ -73,30 +109,14 @@ class SampleMealPlans {
   static final week2 = _createPlan(
     weekNumber: 2,
     stageNumber: 1,
-    dailyMeals: {
-      0: [],
-      1: [],
-      2: [],
-      3: [],
-      4: [],
-      5: [],
-      6: [],
-    },
+    dailyMeals: {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
   );
 
   /// Неделя 3
   static final week3 = _createPlan(
     weekNumber: 3,
     stageNumber: 1,
-    dailyMeals: {
-      0: [],
-      1: [],
-      2: [],
-      3: [],
-      4: [],
-      5: [],
-      6: [],
-    },
+    dailyMeals: {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: []},
   );
 
   /// Получить план по неделе
@@ -113,4 +133,3 @@ class SampleMealPlans {
     }
   }
 }
-

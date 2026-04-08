@@ -205,7 +205,7 @@ class SampleMeals {
   static final summerSaladMeal = MealEntity(
     id: 'meal_3',
     name: 'Летний салат',
-    type: 'dinner',
+    type: 'lunch',
     portion: '120 гр',
     emoji: '🥗',
     calories: 75,
@@ -410,59 +410,54 @@ class SampleMeals {
 
   // ============ УЖИНЫ ============
 
-
-  static final greenSaladDinnerMeal = MealEntity(
-    id: 'meal_6',
-    name: 'Хрустящий микс',
-    type: 'lunch',
-    portion: '150 гр',
-    emoji: '🥬',
-    calories: 95,
-    protein: 3,
-    carbs: 12,
-    fat: 5,
-    imageAssetPath: 'assets/meals/stage_1/week_1/day_1/dinner_2.png',
+  static final summerSaladDinnerMeal = MealEntity(
+    id: 'meal_3',
+    name: 'Летний салат',
+    type: 'dinner',
+    portion: '120 гр',
+    emoji: '🥗',
+    calories: 75,
+    protein: 2,
+    carbs: 10,
+    fat: 4,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_1/lunch_2.png',
     portionSizes: [
       {
         'label': 'Стандартная',
-        'grams': '150 гр',
-        'calories': 95,
-        'protein': 3,
-        'carbs': 12,
-        'fat': 5,
+        'grams': '120 гр',
+        'calories': 75,
+        'protein': 2,
+        'carbs': 10,
+        'fat': 4,
       },
     ],
     ingredients: [
-      'Листья салата (айсберг или микс) — 60 гр',
-      'Шпинат свежий — 30 гр',
-      'Руккола — 30 гр',
-      'Огурец — ½ шт. (50 гр)',
-      'Помидоры черри — 5 шт. (40 гр)',
-      'Редис — 3 шт. (30 гр)',
-      'Авокадо — ¼ шт. (25 гр) опционально',
-      'Оливковое масло — 1 ч.л. (5 гр)',
-      'Лимонный сок — 1 ч.л. (5 гр)',
-      'Соль, чёрный перец — по вкусу',
-      'Семена подсолнечника — 1 ч.л. (5 гр) опционально',
+      'Помидоры — 2 шт. (средние, 100 гр)',
+      'Огурцы — 2 шт. (150 гр)',
+      'Болгарский перец — ½ шт. (50 гр)',
+      'Редис — 5–6 шт. (50 гр)',
+      'Лук репчатый — ¼ шт. (или зелёный лук — 2–3 пера)',
+      'Чеснок — ½ зубчика (по желанию)',
+      'Оливковое масло — 1 ст.л. (10 гр)',
+      'Сметана — 30 гр',
+      'Соль, перец — по вкусу',
     ],
     steps: [
-      'Листья салата, шпинат и рукколу ополосните холодной водой и тщательно обсушите.',
-      'Огурец нарежьте полукружочками.',
-      'Помидоры черри разрежьте пополам.',
-      'Редис нарежьте тонкими ломтиками.',
-      'Авокадо (если используется) очистите и нарежьте кубиками, сбрызните лимонным соком.',
-      'Выложите зелень в салатницу или на тарелку.',
-      'Добавьте нарезанные овощи.',
-      'В отдельной миске смешайте оливковое масло, лимонный сок, соль и перец.',
-      'Полейте салат заправкой и аккуратно перемешайте.',
-      'Посыпьте семенами подсолнечника перед подачей.',
+      'Помидоры и огурцы нарежьте крупными дольками.',
+      'Болгарский перец нарежьте тонкими полосками.',
+      'Редис нарежьте кружочками.',
+      'Лук нарежьте полукольцами и замочите в холодной воде на 5 минут, чтобы убрать горечь.',
+      'Смешайте все овощи в миске.',
+      'Добавьте измельчённый чеснок (если используете).',
+      'Полейте оливковым маслом и сметаной.',
+      'Посолите, поперчите и аккуратно перемешайте.',
       'Подавайте сразу после приготовления.',
     ],
-    description: 'Легкий и полезный зеленый салат с овощами - идеальный гарнир к основному блюду на ужин',
+    description: 'Лёгкий и освежающий летний салат с помидорами, огурцами и редисом, заправленный оливковым маслом и сметаной',
     createdAt: DateTime.now(),
   );
 
-  static final stuffedZucchiniMeal = MealEntity(
+  static final stuffedZucchiniDinnerMeal = MealEntity(
     id: 'meal_9',
     name: 'Фаршированные кабачки',
     type: 'dinner',
@@ -533,6 +528,1345 @@ class SampleMeals {
     createdAt: DateTime.now(),
   );
 
+  static final greenSaladDinnerMeal = MealEntity(
+    id: 'meal_6',
+    name: 'Хрустящий микс',
+    type: 'lunch',
+    portion: '150 гр',
+    emoji: '🥬',
+    calories: 95,
+    protein: 3,
+    carbs: 12,
+    fat: 5,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_1/dinner_2.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '150 гр',
+        'calories': 95,
+        'protein': 3,
+        'carbs': 12,
+        'fat': 5,
+      },
+    ],
+    ingredients: [
+      'Листья салата (айсберг или микс) — 60 гр',
+      'Шпинат свежий — 30 гр',
+      'Руккола — 30 гр',
+      'Огурец — ½ шт. (50 гр)',
+      'Помидоры черри — 5 шт. (40 гр)',
+      'Редис — 3 шт. (30 гр)',
+      'Авокадо — ¼ шт. (25 гр) опционально',
+      'Оливковое масло — 1 ч.л. (5 гр)',
+      'Лимонный сок — 1 ч.л. (5 гр)',
+      'Соль, чёрный перец — по вкусу',
+      'Семена подсолнечника — 1 ч.л. (5 гр) опционально',
+    ],
+    steps: [
+      'Листья салата, шпинат и рукколу ополосните холодной водой и тщательно обсушите.',
+      'Огурец нарежьте полукружочками.',
+      'Помидоры черри разрежьте пополам.',
+      'Редис нарежьте тонкими ломтиками.',
+      'Авокадо (если используется) очистите и нарежьте кубиками, сбрызните лимонным соком.',
+      'Выложите зелень в салатницу или на тарелку.',
+      'Добавьте нарезанные овощи.',
+      'В отдельной миске смешайте оливковое масло, лимонный сок, соль и перец.',
+      'Полейте салат заправкой и аккуратно перемешайте.',
+      'Посыпьте семенами подсолнечника перед подачей.',
+      'Подавайте сразу после приготовления.',
+    ],
+    description: 'Легкий и полезный зеленый салат с овощами - идеальный гарнир к основному блюду на ужин',
+    createdAt: DateTime.now(),
+  );
+
+  static final stuffedZucchiniMeal = MealEntity(
+    id: 'meal_9',
+    name: 'Фаршированные кабачки',
+    type: 'lunch',
+    portion: '200 гр',
+    emoji: '🍆',
+    calories: 380,
+    protein: 24,
+    carbs: 18,
+    fat: 22,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_2/dinner_2.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '150 гр',
+        'calories': 280,
+        'protein': 18,
+        'carbs': 13,
+        'fat': 16,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '200 гр',
+        'calories': 380,
+        'protein': 24,
+        'carbs': 18,
+        'fat': 22,
+      },
+      {
+        'label': 'Большая',
+        'grams': '250 гр',
+        'calories': 480,
+        'protein': 30,
+        'carbs': 22,
+        'fat': 28,
+      },
+    ],
+    ingredients: [
+      'Кабачки или баклажаны — 2 шт. (400 гр)',
+      'Говяжий или куриный фарш — 150 гр',
+      'Помидоры свежие — 100 гр (1-2 шт.)',
+      'Лук репчатый — 50 гр (½ шт.)',
+      'Чеснок — 1-2 зубчика',
+      'Сыр твёрдый — 40 гр (можно моцарелла)',
+      'Петрушка свежая — небольшой пучок',
+      'Оливковое масло — 2 ст.л.',
+      'Томатная паста — 1 ст.л.',
+      'Соль, чёрный перец, красный перец — по вкусу',
+      'Куркума — ½ ч.л.',
+    ],
+    steps: [
+      'Кабачки вымойте, разрежьте вдоль пополам.',
+      'Ложкой аккуратно удалите мякоть, оставляя стенки толщиной 6–7 мм (чтобы лодочки держали форму).',
+      'Мякоть мелко нарубите.',
+      'Лук и чеснок измельчите.',
+      'На сковороде разогрейте масло, обжарьте лук 2–3 минуты до прозрачности.',
+      'Добавьте чеснок и томите ещё 1 минуту.',
+      'Добавьте фарш и обжарьте 5 минут, помешивая, до полной готовности.',
+      'Добавьте рубленую мякоть кабачков, томатную пасту, соль, перец и куркуму.',
+      'Помидоры нарежьте мелко и добавьте в фарш.',
+      'Тушите смесь 5 минут, чтобы испарилась лишняя влага.',
+      'Выложите кабачковые лодочки в смазанную маслом форму для запекания.',
+      'Наполните лодочки фаршем, слегка утрамбовав.',
+      'Посыпьте сверху тёртым сыром и петрушкой.',
+      'Запекайте в разогретой духовке при 190°С 20–25 минут до мягкости кабачков и расплавления сыра.',
+      'Достаньте из духовки и дайте остыть 2–3 минуты перед подачей.',
+    ],
+    description: 'Запечённые кабачки, фаршированные мясом, помидорами и сыром - сытное и полезное второе блюдо на ужин',
+    createdAt: DateTime.now(),
+  );
+
+  // ============ ДЕНЬ 3 (СРЕДА) ============
+
+  static final lavashChipsMeal = MealEntity(
+    id: 'meal_10',
+    name: 'Чипсы из лаваша',
+    type: 'snack',
+    portion: '50 г',
+    emoji: '🥙',
+    calories: 180,
+    protein: 5,
+    carbs: 22,
+    fat: 8,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/snack_1.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '50 г',
+        'calories': 180,
+        'protein': 5,
+        'carbs': 22,
+        'fat': 8,
+      },
+    ],
+    ingredients: [
+      'Лаваш тонкий — 1 лист',
+      'Оливковое масло — 1 ст.л.',
+      'Паприка, соль, перец, итальянские травы — по вкусу',
+      'Помидоры — 2 шт.',
+      'Лук — ½ шт.',
+      'Болгарский перец — ½ шт.',
+      'Перец чили — ¼–½ шт.',
+      'Кинза — 5–7 веточек',
+      'Сок лайма или лимона — 1 ст.л.',
+      'Соль — по вкусу'
+    ],
+    steps: [
+      'Лаваш нарежьте на треугольники или квадраты',
+      'Смешайте с оливковым маслом и специями',
+      'Выложите на противень в один слой',
+      'Запекайте при 160°C 10–15 минут до хруста',
+      'Помидоры, лук, перец и чили измельчите',
+      'Добавьте сок лайма, соль и кинзу',
+      'При необходимости разбавьте водой'
+    ],
+    description: 'Хрустящие ПП чипсы из лаваша с соусом сальса',
+    createdAt: DateTime.now(),
+  );
+
+  static final adjikaMeal = MealEntity(
+    id: 'meal_11',
+    name: 'ПП аджика',
+    type: 'dinner',
+    portion: '50 г',
+    emoji: '🌶️',
+    calories: 40,
+    protein: 1,
+    carbs: 8,
+    fat: 0,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/snack_2.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '50 г',
+        'calories': 40,
+        'protein': 1,
+        'carbs': 8,
+        'fat': 0,
+      },
+    ],
+    ingredients: [
+      'Помидор — 1 крупный',
+      'Красный болгарский перец — 1 шт.',
+      'Острый перец — ½–1 шт.',
+      'Чеснок — 2–3 зубчика',
+      'Соль — ½ ч.л.'
+    ],
+    steps: [
+      'Очистите овощи от семян',
+      'Поместите все ингредиенты в блендер',
+      'Измельчите до однородной консистенции',
+      'Оставьте в холодильнике на 1–2 часа'
+    ],
+    description: 'Острая ПП аджика из свежих овощей',
+    createdAt: DateTime.now(),
+  );
+
+  static final adjikaMealLunch = MealEntity(
+    id: 'meal_11',
+    name: 'ПП аджика',
+    type: 'lunch',
+    portion: '50 г',
+    emoji: '🌶️',
+    calories: 40,
+    protein: 1,
+    carbs: 8,
+    fat: 0,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/snack_2.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '50 г',
+        'calories': 40,
+        'protein': 1,
+        'carbs': 8,
+        'fat': 0,
+      },
+    ],
+    ingredients: [
+      'Помидор — 1 крупный',
+      'Красный болгарский перец — 1 шт.',
+      'Острый перец — ½–1 шт.',
+      'Чеснок — 2–3 зубчика',
+      'Соль — ½ ч.л.'
+    ],
+    steps: [
+      'Очистите овощи от семян',
+      'Поместите все ингредиенты в блендер',
+      'Измельчите до однородной консистенции',
+      'Оставьте в холодильнике на 1–2 часа'
+    ],
+    description: 'Острая ПП аджика из свежих овощей',
+    createdAt: DateTime.now(),
+  );
+
+  static final condensedMilkMeal = MealEntity(
+    id: 'meal_12',
+    name: 'ПП вареная сгущенка',
+    type: 'breakfast',
+    portion: '30 г',
+    emoji: '🥛',
+    calories: 90,
+    protein: 6,
+    carbs: 10,
+    fat: 2,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/snack_3.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '30 г',
+        'calories': 90,
+        'protein': 6,
+        'carbs': 10,
+        'fat': 2,
+      },
+    ],
+    ingredients: [
+      'Сухое обезжиренное молоко — 30 г',
+      'Молоко — 50 мл',
+      'Сахарозаменитель — по вкусу'
+    ],
+    steps: [
+      'Обжарьте сухое молоко до карамельного цвета',
+      'Влейте молоко и добавьте подсластитель',
+      'Перемешайте до однородности',
+      'Взбейте в блендере до кремовой текстуры',
+      'Охладите 1–2 часа'
+    ],
+    description: 'ПП альтернатива вареной сгущенке',
+    createdAt: DateTime.now(),
+  );
+
+  static final confitureMeal = MealEntity(
+    id: 'meal_13',
+    name: 'ПП конфитюр',
+    type: 'breakfast',
+    portion: '50 г',
+    emoji: '🍓',
+    calories: 60,
+    protein: 1,
+    carbs: 14,
+    fat: 0,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/snack_4.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '50 г',
+        'calories': 60,
+        'protein': 1,
+        'carbs': 14,
+        'fat': 0,
+      },
+    ],
+    ingredients: [
+      'Ягоды — 300 г',
+      'Сахарозаменитель — по вкусу'
+    ],
+    steps: [
+      'Разморозьте ягоды при необходимости',
+      'Доведите до кипения',
+      'Томите 10 минут',
+      'Добавьте подсластитель',
+      'Готовьте ещё 5 минут',
+      'Остудите до загустения'
+    ],
+    description: 'Домашний ПП конфитюр без сахара',
+    createdAt: DateTime.now(),
+  );
+
+  static final ppRollsMeal = MealEntity(
+    id: 'meal_14',
+    name: 'ПП рулетики с начинкой',
+    type: 'breakfast',
+    portion: '150 г',
+    emoji: '🥞',
+    calories: 260,
+    protein: 18,
+    carbs: 20,
+    fat: 10,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/breakfast_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '130 г',
+        'calories': 200,
+        'protein': 14,
+        'carbs': 16,
+        'fat': 8,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '150 г',
+        'calories': 260,
+        'protein': 18,
+        'carbs': 20,
+        'fat': 10,
+      },
+      {
+        'label': 'Большая',
+        'grams': '180 г',
+        'calories': 320,
+        'protein': 22,
+        'carbs': 26,
+        'fat': 12,
+      },
+    ],
+    ingredients: [
+      'Кукурузный крахмал — 2 ст.л.',
+      'Яйца — 2 шт.',
+      'Молоко — 80 мл',
+      'Подсластитель — по вкусу',
+      'Творог — 100 г',
+      'Курага — 20 г',
+      'Сметана или творожный сыр — 1 ст.л.'
+    ],
+    steps: [
+      'Взбейте яйца',
+      'Добавьте крахмал и подсластитель',
+      'Влейте молоко и перемешайте',
+      'Дайте тесту постоять 5 минут',
+      'Жарьте блины без масла',
+      'Смешайте ингредиенты начинки',
+      'Сверните рулетики'
+    ],
+    description: 'Нежные ПП блинчики с творожной начинкой',
+    createdAt: DateTime.now(),
+  );
+
+  static final chickenBreastMeal = MealEntity(
+    id: 'meal_15',
+    name: 'Куриная грудка',
+    type: 'dinner',
+    portion: '100 г',
+    emoji: '🍗',
+    calories: 220,
+    protein: 30,
+    carbs: 0,
+    fat: 10,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/dinner_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '80 г',
+        'calories': 180,
+        'protein': 24,
+        'carbs': 0,
+        'fat': 8,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '100 г',
+        'calories': 220,
+        'protein': 30,
+        'carbs': 0,
+        'fat': 10,
+      },
+      {
+        'label': 'Большая',
+        'grams': '120 г',
+        'calories': 260,
+        'protein': 34,
+        'carbs': 0,
+        'fat': 12,
+      },
+    ],
+    ingredients: [
+      'Куриная грудка',
+      'Оливковое масло — 1 ст.л.',
+      'Соль, перец',
+      'Паприка, куркума, чеснок'
+    ],
+    steps: [
+      'Промойте и обсушите грудку',
+      'Смешайте масло и специи',
+      'Замаринуйте мясо',
+      'Запекайте при 200°C 40 минут или обжарьте на сковороде'
+    ],
+    description: 'Сочная куриная грудка с двумя вариантами приготовления',
+    createdAt: DateTime.now(),
+  );
+
+  static final chickenBreastLunchMeal = MealEntity(
+    id: 'meal_15',
+    name: 'Куриная грудка',
+    type: 'lunch',
+    portion: '100 г',
+    emoji: '🍗',
+    calories: 220,
+    protein: 30,
+    carbs: 0,
+    fat: 10,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/dinner_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '80 г',
+        'calories': 180,
+        'protein': 24,
+        'carbs': 0,
+        'fat': 8,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '100 г',
+        'calories': 220,
+        'protein': 30,
+        'carbs': 0,
+        'fat': 10,
+      },
+      {
+        'label': 'Большая',
+        'grams': '120 г',
+        'calories': 260,
+        'protein': 34,
+        'carbs': 0,
+        'fat': 12,
+      },
+    ],
+    ingredients: [
+      'Куриная грудка',
+      'Оливковое масло — 1 ст.л.',
+      'Соль, перец',
+      'Паприка, куркума, чеснок'
+    ],
+    steps: [
+      'Промойте и обсушите грудку',
+      'Смешайте масло и специи',
+      'Замаринуйте мясо',
+      'Запекайте при 200°C 40 минут или обжарьте на сковороде'
+    ],
+    description: 'Сочная куриная грудка с двумя вариантами приготовления',
+    createdAt: DateTime.now(),
+  );
+
+  static final bakedVeggiesMeal = MealEntity(
+    id: 'meal_16',
+    name: 'Запечённый овощной микс',
+    type: 'dinner',
+    portion: '120 г',
+    emoji: '🥦',
+    calories: 110,
+    protein: 3,
+    carbs: 12,
+    fat: 5,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/dinner_2.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '120 г',
+        'calories': 110,
+        'protein': 3,
+        'carbs': 12,
+        'fat': 5,
+      },
+    ],
+    ingredients: [
+      'Цветная капуста — 50 г',
+      'Брокколи — 50 г',
+      'Болгарский перец — 1 шт.',
+      'Кабачок — 1 шт.',
+      'Оливковое масло — 1 ст.л.',
+      'Соль, перец, чеснок'
+    ],
+    steps: [
+      'Нарежьте овощи',
+      'Смешайте с маслом и специями',
+      'Оставьте на 15–20 минут',
+      'Запекайте при 200°C 20–25 минут или обжарьте на гриле'
+    ],
+    description: 'Полезный запечённый овощной гарнир',
+    createdAt: DateTime.now(),
+  );
+
+  static final bakedVeggiesMealLunch = MealEntity(
+    id: 'meal_16',
+    name: 'Запечённый овощной микс',
+    type: 'lunch',
+    portion: '120 г',
+    emoji: '🥦',
+    calories: 110,
+    protein: 3,
+    carbs: 12,
+    fat: 5,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_3/dinner_2.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '120 г',
+        'calories': 110,
+        'protein': 3,
+        'carbs': 12,
+        'fat': 5,
+      },
+    ],
+    ingredients: [
+      'Цветная капуста — 50 г',
+      'Брокколи — 50 г',
+      'Болгарский перец — 1 шт.',
+      'Кабачок — 1 шт.',
+      'Оливковое масло — 1 ст.л.',
+      'Соль, перец, чеснок'
+    ],
+    steps: [
+      'Нарежьте овощи',
+      'Смешайте с маслом и специями',
+      'Оставьте на 15–20 минут',
+      'Запекайте при 200°C 20–25 минут или обжарьте на гриле'
+    ],
+    description: 'Полезный запечённый овощной гарнир',
+    createdAt: DateTime.now(),
+  );
+
+  // ============ ДЕНЬ 4 (ЧЕТВЕРГ) ============
+
+  static final glazedCurdSnack = MealEntity(
+    id: 'meal_17',
+    name: 'ПП глазированный сырок',
+    type: 'snack',
+    portion: '120 г',
+    emoji: '🍫',
+    calories: 220,
+    protein: 12,
+    carbs: 14,
+    fat: 12,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_4/snack_1.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '120 г',
+        'calories': 220,
+        'protein': 12,
+        'carbs': 14,
+        'fat': 12,
+      },
+    ],
+    ingredients: [
+      'Горький шоколад без сахара — 50 г',
+      'Творог — 120 г',
+      'Кокосовая стружка — 1 ст.л.',
+      'ПП сгущенка или сметана — 1 ст.л.',
+      'Ягоды — 50 г'
+    ],
+    steps: [
+      'Растопите шоколад',
+      'Смажьте формочки шоколадом и охладите',
+      'Взбейте творог с остальными ингредиентами',
+      'Выложите слой творога затем ягоды затем снова творог',
+      'Закройте шоколадом и заморозьте'
+    ],
+    description: 'ПП десерт сырок в шоколадной глазури с ягодной начинкой',
+    createdAt: DateTime.now(),
+  );
+
+  static final syrnikiMeal = MealEntity(
+    id: 'meal_18',
+    name: 'ПП сырники',
+    type: 'dinner',
+    portion: '150 г',
+    emoji: '🥞',
+    calories: 260,
+    protein: 18,
+    carbs: 22,
+    fat: 10,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_4/dinner_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '150 г',
+        'calories': 260,
+        'protein': 18,
+        'carbs': 22,
+        'fat': 10,
+      },
+      {
+        'label': 'Большая',
+        'grams': '200 г',
+        'calories': 320,
+        'protein': 22,
+        'carbs': 28,
+        'fat': 12,
+      },
+    ],
+    ingredients: [
+      'Творог — 250–300 г',
+      'Яйцо — 1 шт.',
+      'Цельнозерновая мука — 1–2 ст.л.',
+      'Подсластитель — по вкусу',
+      'Масло — 1 ч.л.'
+    ],
+    steps: [
+      'Смешайте творог яйцо и подсластитель',
+      'Добавьте муку и замесите тесто',
+      'Сформируйте сырники',
+      'Обжарьте по 3–4 минуты с каждой стороны'
+    ],
+    description: 'Классические ПП сырники с золотистой корочкой',
+    createdAt: DateTime.now(),
+  );
+
+  static final syrnikiBreakfastMeal = MealEntity(
+    id: 'meal_18',
+    name: 'ПП сырники',
+    type: 'breakfast',
+    portion: '150 г',
+    emoji: '🥞',
+    calories: 260,
+    protein: 18,
+    carbs: 22,
+    fat: 10,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_4/dinner_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '150 г',
+        'calories': 260,
+        'protein': 18,
+        'carbs': 22,
+        'fat': 10,
+      },
+      {
+        'label': 'Большая',
+        'grams': '200 г',
+        'calories': 320,
+        'protein': 22,
+        'carbs': 28,
+        'fat': 12,
+      },
+    ],
+    ingredients: [
+      'Творог — 250–300 г',
+      'Яйцо — 1 шт.',
+      'Цельнозерновая мука — 1–2 ст.л.',
+      'Подсластитель — по вкусу',
+      'Масло — 1 ч.л.'
+    ],
+    steps: [
+      'Смешайте творог яйцо и подсластитель',
+      'Добавьте муку и замесите тесто',
+      'Сформируйте сырники',
+      'Обжарьте по 3–4 минуты с каждой стороны'
+    ],
+    description: 'Классические ПП сырники с золотистой корочкой',
+    createdAt: DateTime.now(),
+  );
+
+  // ============ ДЕНЬ 5 (ПЯТНИЦА) ============
+
+  static final curdJellySnack = MealEntity(
+    id: 'meal_19',
+    name: 'ПП желе с творогом',
+    type: 'snack',
+    portion: '150 г',
+    emoji: '🍓',
+    calories: 140,
+    protein: 12,
+    carbs: 10,
+    fat: 4,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_5/snack_1.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '150 г',
+        'calories': 140,
+        'protein': 12,
+        'carbs': 10,
+        'fat': 4,
+      },
+    ],
+    ingredients: [
+      'Творог — 40 г',
+      'Йогурт или кефир — 15 г',
+      'Желатин — 6 г',
+      'Ягоды — 50 г',
+      'Подсластитель — по вкусу'
+    ],
+    steps: [
+      'Замочите желатин',
+      'Смешайте творог йогурт и подсластитель',
+      'Добавьте растопленный желатин',
+      'Охладите до застывания',
+      'Приготовьте ягодный слой и вылейте сверху',
+      'Уберите в холодильник до полного застывания'
+    ],
+    description: 'Лёгкий десерт с творожным и ягодным слоями',
+    createdAt: DateTime.now(),
+  );
+
+  static final beanBorschtMeal = MealEntity(
+    id: 'meal_20',
+    name: 'Борщ из фасоли',
+    type: 'lunch',
+    portion: '250 г',
+    emoji: '🍲',
+    calories: 180,
+    protein: 9,
+    carbs: 22,
+    fat: 6,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_5/lunch_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '250 г',
+        'calories': 180,
+        'protein': 9,
+        'carbs': 22,
+        'fat': 6,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '275 г',
+        'calories': 200,
+        'protein': 10,
+        'carbs': 25,
+        'fat': 7,
+      },
+      {
+        'label': 'Большая',
+        'grams': '300 г',
+        'calories': 220,
+        'protein': 11,
+        'carbs': 28,
+        'fat': 8,
+      },
+    ],
+    ingredients: [
+      'Красная фасоль — 40 г',
+      'Морковь — 1 шт.',
+      'Свекла — 1 шт.',
+      'Лук — 1 шт.',
+      'Помидоры — 2 шт.',
+      'Капуста — 150 г',
+      'Чеснок — 2 зубчика',
+      'Растительное масло — 1 ст.л.'
+    ],
+    steps: [
+      'Замочите и отварите фасоль',
+      'Обжарьте овощи',
+      'Добавьте капусту фасоль и зажарку в воду',
+      'Варите 7–10 минут',
+      'Добавьте чеснок и зелень и дайте настояться'
+    ],
+    description: 'Лёгкий овощной борщ с фасолью без мяса',
+    createdAt: DateTime.now(),
+  );
+
+  static final georgianSaladMeal = MealEntity(
+    id: 'meal_21',
+    name: 'Грузинский салат с говядиной',
+    type: 'dinner',
+    portion: '170 г',
+    emoji: '🥗',
+    calories: 320,
+    protein: 22,
+    carbs: 12,
+    fat: 18,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_5/dinner_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '170 г',
+        'calories': 320,
+        'protein': 22,
+        'carbs': 12,
+        'fat': 18,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '200 г',
+        'calories': 360,
+        'protein': 26,
+        'carbs': 14,
+        'fat': 20,
+      },
+      {
+        'label': 'Большая',
+        'grams': '220 г',
+        'calories': 400,
+        'protein': 28,
+        'carbs': 16,
+        'fat': 22,
+      },
+    ],
+    ingredients: [
+      'Говядина — 120 г',
+      'Красная фасоль — 100 г',
+      'Болгарский перец — 1 шт.',
+      'Лук — 1 шт.',
+      'Помидоры — 2 шт.',
+      'Грецкие орехи — 20 г',
+      'Зелень и чеснок',
+      'Оливковое масло — 1 ч.л.'
+    ],
+    steps: [
+      'Отварите и нарежьте мясо',
+      'Нарежьте овощи',
+      'Смешайте все ингредиенты',
+      'Добавьте заправку и перемешайте'
+    ],
+    description: 'Сытный белковый салат с говядиной и овощами',
+    createdAt: DateTime.now(),
+  );
+
+  // ============ ДЕНЬ 6 (СУББОТА) ============
+
+  static final fitSteakMeal = MealEntity(
+    id: 'meal_22',
+    name: 'Фит стейк',
+    type: 'lunch',
+    portion: '100 г',
+    emoji: '🥩',
+    calories: 280,
+    protein: 26,
+    carbs: 18,
+    fat: 12,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_6/lunch_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '100 г',
+        'calories': 280,
+        'protein': 26,
+        'carbs': 18,
+        'fat': 12,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '120 г',
+        'calories': 320,
+        'protein': 30,
+        'carbs': 20,
+        'fat': 14,
+      },
+      {
+        'label': 'Большая',
+        'grams': '150 г',
+        'calories': 380,
+        'protein': 36,
+        'carbs': 24,
+        'fat': 16,
+      },
+    ],
+    ingredients: [
+      'Говядина — 125 г',
+      'Лук — 1/2 шт.',
+      'Яйцо — 1 шт.',
+      'Горчица — по желанию',
+      'Булгур — 60 г',
+      'Специи и масло'
+    ],
+    steps: [
+      'Смешайте фарш с луком и специями',
+      'Сформируйте котлету',
+      'Обжарьте с двух сторон',
+      'Приготовьте яйцо',
+      'Отварите булгур',
+      'Подавайте вместе'
+    ],
+    description: 'Белковый обед с говядиной яйцом и булгуром',
+    createdAt: DateTime.now(),
+  );
+
+  static final dietBelyashiMeal = MealEntity(
+    id: 'meal_23',
+    name: 'Диетические беляши',
+    type: 'breakfast',
+    portion: '150 г',
+    emoji: '🥟',
+    calories: 260,
+    protein: 20,
+    carbs: 22,
+    fat: 10,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_6/breakfast_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '150 г',
+        'calories': 260,
+        'protein': 20,
+        'carbs': 22,
+        'fat': 10,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '180 г',
+        'calories': 300,
+        'protein': 24,
+        'carbs': 26,
+        'fat': 12,
+      },
+      {
+        'label': 'Большая',
+        'grams': '200 г',
+        'calories': 340,
+        'protein': 28,
+        'carbs': 30,
+        'fat': 14,
+      },
+    ],
+    ingredients: [
+      'Цельнозерновая мука — 60 г',
+      'Творог — 100 г',
+      'Белок — 1 шт.',
+      'Фарш — 70 г',
+      'Лук — 30 г'
+    ],
+    steps: [
+      'Смешайте ингредиенты для теста',
+      'Приготовьте начинку',
+      'Сформируйте беляши',
+      'Запекайте 25–30 минут'
+    ],
+    description: 'Полезные беляши с мясной начинкой без жарки',
+    createdAt: DateTime.now(),
+  );
+
+  static final chickpeaPilafMeal = MealEntity(
+    id: 'meal_24',
+    name: 'Плов из нута',
+    type: 'dinner',
+    portion: '180 г',
+    emoji: '🍛',
+    calories: 330,
+    protein: 22,
+    carbs: 28,
+    fat: 14,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_6/dinner_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '180 г',
+        'calories': 330,
+        'protein': 22,
+        'carbs': 28,
+        'fat': 14,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '200 г',
+        'calories': 360,
+        'protein': 25,
+        'carbs': 30,
+        'fat': 15,
+      },
+      {
+        'label': 'Большая',
+        'grams': '220 г',
+        'calories': 400,
+        'protein': 28,
+        'carbs': 34,
+        'fat': 17,
+      },
+    ],
+    ingredients: [
+      'Курица — 200 г',
+      'Нут — 50 г',
+      'Морковь — 1 шт.',
+      'Лук — 1 шт.',
+      'Специи'
+    ],
+    steps: [
+      'Отварите нут',
+      'Обжарьте курицу и овощи',
+      'Добавьте нут',
+      'Тушите 15 минут'
+    ],
+    description: 'Сытное блюдо с курицей и нутом',
+    createdAt: DateTime.now(),
+  );
+
+  static final detoxSaladMeal = MealEntity(
+    id: 'meal_25',
+    name: 'Детокс салат',
+    type: 'lunch',
+    portion: '120 г',
+    emoji: '🥒',
+    calories: 90,
+    protein: 3,
+    carbs: 10,
+    fat: 4,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_6/lunch_side.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '120 г',
+        'calories': 90,
+        'protein': 3,
+        'carbs': 10,
+        'fat': 4,
+      },
+    ],
+    ingredients: [
+      'Огурец',
+      'Редис',
+      'Яблоко',
+      'Сметана или йогурт'
+    ],
+    steps: [
+      'Нарежьте овощи',
+      'Приготовьте заправку',
+      'Смешайте все ингредиенты'
+    ],
+    description: 'Лёгкий освежающий салат для пищеварения',
+    createdAt: DateTime.now(),
+  );
+
+  static final brushSaladMeal = MealEntity(
+    id: 'meal_26',
+    name: 'Салат Метёлка',
+    type: 'dinner',
+    portion: '100 г',
+    emoji: '🥗',
+    calories: 80,
+    protein: 2,
+    carbs: 12,
+    fat: 3,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_6/dinner_side.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '100 г',
+        'calories': 80,
+        'protein': 2,
+        'carbs': 12,
+        'fat': 3,
+      },
+    ],
+    ingredients: [
+      'Капуста',
+      'Свекла',
+      'Морковь',
+      'Яблоко'
+    ],
+    steps: [
+      'Натрите овощи',
+      'Смешайте с заправкой'
+    ],
+    description: 'Очищающий овощной салат',
+    createdAt: DateTime.now(),
+  );
+
+  static final darkChocolateSnack = MealEntity(
+    id: 'meal_27',
+    name: 'Чёрный шоколад без сахара',
+    type: 'snack',
+    portion: '15 г',
+    emoji: '🍫',
+    calories: 85,
+    protein: 1,
+    carbs: 4,
+    fat: 7,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_6/dark_chocolate.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '15 г',
+        'calories': 85,
+        'protein': 1,
+        'carbs': 4,
+        'fat': 7,
+      },
+    ],
+    ingredients: [
+      'Горький шоколад без сахара — 15 г (2 дольки)',
+      'Чай или кофе без сахара'
+    ],
+    steps: [
+      'Разломайте шоколад на дольки',
+      'Приготовьте горячий напиток без сахара',
+      'Наслаждайтесь медленно'
+    ],
+    description: 'Полезный перекус с чёрным шоколадом без сахара',
+    createdAt: DateTime.now(),
+  );
+
+  // ============ ДЕНЬ 7 (ВОСКРЕСЕНЬЕ) ============
+
+  static final cheesecakeMeal = MealEntity(
+    id: 'meal_28',
+    name: 'Творожный чизкейк',
+    type: 'breakfast',
+    portion: '140 г',
+    emoji: '🍰',
+    calories: 260,
+    protein: 22,
+    carbs: 18,
+    fat: 12,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_7/breakfast_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '140 г',
+        'calories': 260,
+        'protein': 22,
+        'carbs': 18,
+        'fat': 12,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '165 г',
+        'calories': 300,
+        'protein': 26,
+        'carbs': 20,
+        'fat': 14,
+      },
+      {
+        'label': 'Большая',
+        'grams': '180 г',
+        'calories': 330,
+        'protein': 28,
+        'carbs': 22,
+        'fat': 15,
+      },
+    ],
+    ingredients: [
+      'Творог 5% — 200 г',
+      'Рисовая мука — 60 г',
+      'Яйцо',
+      'Сахарозаменитель',
+      'Крахмал'
+    ],
+    steps: [
+      'Смешайте ингредиенты для основы',
+      'Приготовьте творожную массу',
+      'Выложите слоями',
+      'Выпекайте 40 минут'
+    ],
+    description: 'Полезный чизкейк с высоким содержанием белка',
+    createdAt: DateTime.now(),
+  );
+
+  static final chickenKebabMeal = MealEntity(
+    id: 'meal_29',
+    name: 'Куриный шашлык',
+    type: 'lunch',
+    portion: '140 г',
+    emoji: '🍢',
+    calories: 300,
+    protein: 30,
+    carbs: 10,
+    fat: 16,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_7/lunch_1.png',
+    portionSizes: [
+      {
+        'label': 'Маленькая',
+        'grams': '140 г',
+        'calories': 300,
+        'protein': 30,
+        'carbs': 10,
+        'fat': 16,
+      },
+      {
+        'label': 'Средняя',
+        'grams': '160 г',
+        'calories': 340,
+        'protein': 34,
+        'carbs': 12,
+        'fat': 18,
+      },
+      {
+        'label': 'Большая',
+        'grams': '180 г',
+        'calories': 380,
+        'protein': 38,
+        'carbs': 14,
+        'fat': 20,
+      },
+    ],
+    ingredients: [
+      'Куриное филе — 350 г',
+      'Оливковое масло',
+      'Соевый соус',
+      'Овощи',
+      'Специи'
+    ],
+    steps: [
+      'Замаринуйте курицу',
+      'Нарежьте овощи',
+      'Соберите шашлыки',
+      'Запекайте 25–30 минут'
+    ],
+    description: 'Лёгкое белковое блюдо с овощами',
+    createdAt: DateTime.now(),
+  );
+
+  static final smokeSaladMeal = MealEntity(
+    id: 'meal_30',
+    name: 'Салат Дымок',
+    type: 'lunch',
+    portion: '150 г',
+    emoji: '🥗',
+    calories: 120,
+    protein: 3,
+    carbs: 12,
+    fat: 7,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_7/lunch_side.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '150 г',
+        'calories': 120,
+        'protein': 3,
+        'carbs': 12,
+        'fat': 7,
+      },
+    ],
+    ingredients: [
+      'Баклажан',
+      'Перец',
+      'Кабачок',
+      'Помидоры',
+      'Зелень'
+    ],
+    steps: [
+      'Запеките овощи',
+      'Нарежьте',
+      'Смешайте с заправкой'
+    ],
+    description: 'Овощной салат с запечённым вкусом',
+    createdAt: DateTime.now(),
+  );
+
+  static final appleSnackMeal = MealEntity(
+    id: 'meal_31',
+    name: 'Зелёное яблоко',
+    type: 'snack',
+    portion: '1 шт',
+    emoji: '🍏',
+    calories: 80,
+    protein: 0,
+    carbs: 20,
+    fat: 0,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_7/snack_1.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '1 шт',
+        'calories': 80,
+        'protein': 0,
+        'carbs': 20,
+        'fat': 0,
+      },
+    ],
+    ingredients: [
+      'Зелёное яблоко'
+    ],
+    steps: [
+      'Вымойте яблоко',
+      'Употребляйте свежим'
+    ],
+    description: 'Лёгкий перекус',
+    createdAt: DateTime.now(),
+  );
+
+  static final proteinShakeMeal = MealEntity(
+    id: 'meal_32',
+    name: 'Белковый коктейль',
+    type: 'dinner',
+    portion: '250 мл',
+    emoji: '🥤',
+    calories: 220,
+    protein: 25,
+    carbs: 15,
+    fat: 6,
+    imageAssetPath: 'assets/meals/stage_1/week_1/day_7/dinner_1.png',
+    portionSizes: [
+      {
+        'label': 'Стандартная',
+        'grams': '250 мл',
+        'calories': 220,
+        'protein': 25,
+        'carbs': 15,
+        'fat': 6,
+      },
+    ],
+    ingredients: [
+      'Творог — 140 г',
+      'Кефир — 120 мл',
+      'Ягоды — 50 г',
+      'Подсластитель'
+    ],
+    steps: [
+      'Смешайте все ингредиенты',
+      'Взбейте в блендере'
+    ],
+    description: 'Лёгкий белковый ужин',
+    createdAt: DateTime.now(),
+  );
+
   // ============ ВСЕ БЛЮДА (для итерации) ============
 
   static final List<MealEntity> allMeals = [
@@ -540,10 +1874,39 @@ class SampleMeals {
     shakshukaMeal,
     pastaBologneseMeal,
     summerSaladMeal,
+    summerSaladDinnerMeal,
     fruitSaladMeal,
     meatballsDinnerMeal,
     layeredDessertMeal,
     greenSaladDinnerMeal,
     stuffedZucchiniMeal,
+    stuffedZucchiniDinnerMeal,
+    lavashChipsMeal,
+    ppRollsMeal,
+    condensedMilkMeal,
+    confitureMeal,
+    chickenBreastMeal,
+    chickenBreastLunchMeal,
+    bakedVeggiesMeal,
+    bakedVeggiesMealLunch,
+    adjikaMeal,
+    adjikaMealLunch,
+    glazedCurdSnack,
+    syrnikiMeal,
+    syrnikiBreakfastMeal,
+    curdJellySnack,
+    beanBorschtMeal,
+    georgianSaladMeal,
+    fitSteakMeal,
+    dietBelyashiMeal,
+    chickpeaPilafMeal,
+    detoxSaladMeal,
+    brushSaladMeal,
+    darkChocolateSnack,
+    cheesecakeMeal,
+    chickenKebabMeal,
+    smokeSaladMeal,
+    appleSnackMeal,
+    proteinShakeMeal,
   ];
 }

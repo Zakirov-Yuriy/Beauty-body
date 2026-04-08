@@ -785,10 +785,89 @@ class _HomeTab extends ConsumerWidget {
                               );
                               print('✅ meal_9 с картинкой активирована');
                               
+                              // ========== ДЕНЬ 3 (СРЕДА) ==========
+                              
+                              // Добавляем meal_10 (чипсы из лаваша - перекус)
+                              await ref.read(addMealProvider(SampleMeals.lavashChipsMeal).future);
+                              print('✅ meal_10 добавлена');
+                              
+                              // Обновляем meal_10 с картинкой
+                              await ref.read(mealRepositoryProvider).updateMealStoragePath(
+                                mealId: 'meal_10',
+                                storagePath: 'assets/meals/stage_1/week_1/day_3/snack_1.png',
+                              );
+                              print('✅ meal_10 с картинкой активирована');
+                              
+                              // Добавляем meal_11 (ПП аджика)
+                              await ref.read(addMealProvider(SampleMeals.adjikaMeal).future);
+                              print('✅ meal_11 добавлена');
+                              
+                              // Обновляем meal_11 с картинкой
+                              await ref.read(mealRepositoryProvider).updateMealStoragePath(
+                                mealId: 'meal_11',
+                                storagePath: 'assets/meals/stage_1/week_1/day_3/snack_2.png',
+                              );
+                              print('✅ meal_11 с картинкой активирована');
+                              
+                              // Добавляем meal_12 (ПП вареная сгущенка)
+                              await ref.read(addMealProvider(SampleMeals.condensedMilkMeal).future);
+                              print('✅ meal_12 добавлена');
+                              
+                              // Обновляем meal_12 с картинкой
+                              await ref.read(mealRepositoryProvider).updateMealStoragePath(
+                                mealId: 'meal_12',
+                                storagePath: 'assets/meals/stage_1/week_1/day_3/snack_3.png',
+                              );
+                              print('✅ meal_12 с картинкой активирована');
+                              
+                              // Добавляем meal_13 (ПП конфитюр)
+                              await ref.read(addMealProvider(SampleMeals.confitureMeal).future);
+                              print('✅ meal_13 добавлена');
+                              
+                              // Обновляем meal_13 с картинкой
+                              await ref.read(mealRepositoryProvider).updateMealStoragePath(
+                                mealId: 'meal_13',
+                                storagePath: 'assets/meals/stage_1/week_1/day_3/snack_4.png',
+                              );
+                              print('✅ meal_13 с картинкой активирована');
+                              
+                              // Добавляем meal_14 (ПП рулетики - завтрак)
+                              await ref.read(addMealProvider(SampleMeals.ppRollsMeal).future);
+                              print('✅ meal_14 добавлена');
+                              
+                              // Обновляем meal_14 с картинкой
+                              await ref.read(mealRepositoryProvider).updateMealStoragePath(
+                                mealId: 'meal_14',
+                                storagePath: 'assets/meals/stage_1/week_1/day_3/breakfast_1.png',
+                              );
+                              print('✅ meal_14 с картинкой активирована');
+                              
+                              // Добавляем meal_15 (куриная грудка - ужин)
+                              await ref.read(addMealProvider(SampleMeals.chickenBreastMeal).future);
+                              print('✅ meal_15 добавлена');
+                              
+                              // Обновляем meal_15 с картинкой
+                              await ref.read(mealRepositoryProvider).updateMealStoragePath(
+                                mealId: 'meal_15',
+                                storagePath: 'assets/meals/stage_1/week_1/day_3/dinner_1.png',
+                              );
+                              print('✅ meal_15 с картинкой активирована');
+                              
+                              // Добавляем meal_16 (запечённые овощи - ужин)
+                              await ref.read(addMealProvider(SampleMeals.bakedVeggiesMeal).future);
+                              print('✅ meal_16 добавлена');
+                              
+                              // Обновляем meal_16 с картинкой
+                              await ref.read(mealRepositoryProvider).updateMealStoragePath(
+                                mealId: 'meal_16',
+                                storagePath: 'assets/meals/stage_1/week_1/day_3/dinner_2.png',
+                              );
+                              print('✅ meal_16 с картинкой активирована');
+                              
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('✅ Меню День 1 и День 2 инициализировано! 🎉'),
+                                    content: Text('✅ Меню День 1, 2 и 3 инициализировано! 🎉'),
                                     backgroundColor: Colors.green,
                                     duration: Duration(seconds: 5),
                                   ),

@@ -131,12 +131,18 @@ class RecipeDetailScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              title: Text(
-                mealName,
-                style: GoogleFonts.rubik(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.white,
+              title: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  mealName,
+                  style: GoogleFonts.rubik(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.white,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
@@ -211,6 +217,7 @@ class RecipeDetailScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 10),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(portionSizes.length, (index) {
                         final portionData =
                             portionSizes[index] as Map<String, dynamic>;
@@ -218,65 +225,68 @@ class RecipeDetailScreen extends ConsumerWidget {
                         final grams = portionData['grams'] as String? ?? '';
                         final isSelected = selectedPortionIndex == index;
 
-                        return Flexible(
-                          flex: 1,
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              right: index < portionSizes.length - 1 ? 8 : 0,
-                            ),
-                            child: GestureDetector(
-                              onTap: () {
-                                ref
-                                        .read(
-                                          selectedPortionIndexProvider(
-                                            mealId,
-                                          ).notifier,
-                                        )
-                                        .state =
-                                    index;
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              ref
+                                      .read(
+                                        selectedPortionIndexProvider(
+                                          mealId,
+                                        ).notifier,
+                                      )
+                                      .state =
+                                  index;
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                right: index < portionSizes.length - 1 ? 6 : 0,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? AppColors.greenMid
+                                    : AppColors.greenSurface,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
                                   color: isSelected
-                                      ? AppColors.greenMid
-                                      : AppColors.greenSurface,
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? AppColors.greenDark
-                                        : Colors.transparent,
-                                    width: 2,
+                                      ? AppColors.greenDark
+                                      : Colors.transparent,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    label,
+                                    style: GoogleFonts.rubik(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: isSelected
+                                          ? AppColors.white
+                                          : AppColors.textDark,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      label,
-                                      style: GoogleFonts.rubik(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: isSelected
-                                            ? AppColors.white
-                                            : AppColors.textDark,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    grams,
+                                    style: GoogleFonts.rubik(
+                                      fontSize: 10,
+                                      color: isSelected
+                                          ? AppColors.white
+                                          : AppColors.textMuted,
                                     ),
-                                    Text(
-                                      grams,
-                                      style: GoogleFonts.rubik(
-                                        fontSize: 11,
-                                        color: isSelected
-                                            ? AppColors.white
-                                            : AppColors.textMuted,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -364,6 +374,8 @@ class RecipeDetailScreen extends ConsumerWidget {
                                   fontSize: 14,
                                   color: AppColors.textDark,
                                 ),
+                                maxLines: 2,
+                                softWrap: true,
                               ),
                             ),
                             if (amount.isNotEmpty)

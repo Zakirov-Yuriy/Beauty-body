@@ -127,7 +127,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: AppColors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: AppColors.greenBorder, width: 0.5),
                       ),
                       child: Column(

@@ -148,7 +148,43 @@ imageAssetPath: 'assets/meals/stage_3/week_1/day_5/snack_1.png',
   - ID: meal_9
   - Размеры: 150г (маленькая), 200г (средняя), 250г (большая)
 
+## День 3 (Среда) - Структура Меню
+
+**Завтраки:**
+- `breakfast_1.png` (day_3) - ПП рулетики с начинкой (pp_rolls_meal)
+  - Путь: `assets/meals/stage_1/week_1/day_3/breakfast_1.png`
+  - ID: meal_14
+  - Размеры: 130г (маленькая), 150г (средняя), 180г (большая)
+
+**Перекусы:**
+- `snack_1.png` (day_3) - Чипсы из лаваша (lavash_chips_meal)
+  - Путь: `assets/meals/stage_1/week_1/day_3/snack_1.png`
+  - ID: meal_10
+  - Размер: 50г (стандартная)
+- `snack_2.png` (day_3) - ПП аджика (adjika_meal)
+  - Путь: `assets/meals/stage_1/week_1/day_3/snack_2.png`
+  - ID: meal_11
+  - Размер: 50г (стандартная)
+- `snack_3.png` (day_3) - ПП вареная сгущенка (condensed_milk_meal)
+  - Путь: `assets/meals/stage_1/week_1/day_3/snack_3.png`
+  - ID: meal_12
+  - Размер: 30г (стандартная)
+- `snack_4.png` (day_3) - ПП конфитюр (confiture_meal)
+  - Путь: `assets/meals/stage_1/week_1/day_3/snack_4.png`
+  - ID: meal_13
+  - Размер: 50г (стандартная)
+
+**Ужины:**
+- `dinner_1.png` (day_3) - Куриная грудка (chicken_breast_meal)
+  - Путь: `assets/meals/stage_1/week_1/day_3/dinner_1.png`
+  - ID: meal_15
+  - Размеры: 80г (маленькая), 100г (средняя), 120г (большая)
+- `dinner_2.png` (day_3) - Запечённый овощной микс (baked_veggies_meal)
+  - Путь: `assets/meals/stage_1/week_1/day_3/dinner_2.png`
+  - ID: meal_16
+  - Размер: 120г (стандартная)
+
 ---
 
-**Обновлено:** 07.04.2026  
-**Версия:** 2.3
+**Обновлено:** 08.04.2026  
+**Версия:** 3.0

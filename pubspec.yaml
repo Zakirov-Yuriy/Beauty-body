@@ -108,6 +108,11 @@ flutter:
     - assets/meals/stage_1/week_1/
     - assets/meals/stage_1/week_1/day_1/
     - assets/meals/stage_1/week_1/day_2/
+    - assets/meals/stage_1/week_1/day_3/
+    - assets/meals/stage_1/week_1/day_4/
+    - assets/meals/stage_1/week_1/day_5/
+    - assets/meals/stage_1/week_1/day_6/
+    - assets/meals/stage_1/week_1/day_7/
     - assets/meals/stage_2/
     - assets/meals/stage_2/week_1/
     - assets/meals/stage_2/week_1/day_1/
