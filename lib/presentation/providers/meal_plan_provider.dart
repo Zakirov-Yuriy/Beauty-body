@@ -180,26 +180,24 @@ final selectedMealPlanProvider = FutureProvider<MealPlanEntity?>((ref) async {
 });
 
 /// Поставщик для получения меню и дня недели на сегодня
-final todayMealPlanProvider = Provider<AsyncValue<({String dayName, List<MealEntity> meals})>>((ref) {
-  final planAsync = ref.watch(selectedMealPlanProvider);
+final todayMealPlanProvider = FutureProvider<({String dayName, List<MealEntity> meals})>((ref) async {
+  final mealPlan = await ref.watch(selectedMealPlanProvider.future);
   
-  return planAsync.whenData((mealPlan) {
-    if (mealPlan == null || mealPlan.dailyMeals.isEmpty) {
-      return (dayName: 'Понедельник', meals: <MealEntity>[]);
-    }
-    
-    // Получаем текущий день недели (0=пн, 1=вт, ..., 6=вс)
-    final todayDayIndex = DateTime.now().weekday - 1;
-    
-    // Список названий дней
-    const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
-    final dayName = dayNames[todayDayIndex];
-    
-    // Получаем меню на сегодня
-    final todayMeals = mealPlan.dailyMeals[todayDayIndex] ?? [];
-    
-    print('📅 Today is $dayName (index: $todayDayIndex), meals count: ${todayMeals.length}');
-    
-    return (dayName: dayName, meals: todayMeals);
-  });
+  if (mealPlan == null || mealPlan.dailyMeals.isEmpty) {
+    return (dayName: 'Понедельник', meals: <MealEntity>[]);
+  }
+  
+  // Получаем текущий день недели (0=пн, 1=вт, ..., 6=вс)
+  final todayDayIndex = DateTime.now().weekday - 1;
+  
+  // Список названий дней
+  const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
+  final dayName = dayNames[todayDayIndex];
+  
+  // Получаем меню на сегодня
+  final todayMeals = mealPlan.dailyMeals[todayDayIndex] ?? [];
+  
+  print('📅 Today is $dayName (index: $todayDayIndex), meals count: ${todayMeals.length}');
+  
+  return (dayName: dayName, meals: todayMeals);
 });
