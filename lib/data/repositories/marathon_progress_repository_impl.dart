@@ -46,4 +46,9 @@ class MarathonProgressRepositoryImpl implements MarathonProgressRepository {
   Future<void> resetMarathonProgress(String userId) {
     return _dataSource.resetMarathonProgress(userId);
   }
+
+  @override
+  Future<void> updateProgressBasedOnElapsedDays(String userId) {
+    return _dataSource.updateProgressBasedOnElapsedDays(userId);
+  }
 }

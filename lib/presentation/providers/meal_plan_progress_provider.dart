@@ -2,8 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../data/models/meal_plan_progress_model.dart';
 import '../../domain/entities/meal_plan_progress_entity.dart';
-import 'repository_providers.dart';
-import 'firebase_providers.dart';
 import 'auth_provider.dart';
 
 /// Получить текущий прогресс плана питания пользователя

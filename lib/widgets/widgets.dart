@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme.dart';
-import '../presentation/providers/storage_provider.dart';
 import '../presentation/providers/portion_provider.dart';
 import '../presentation/providers/eaten_meals_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -146,7 +145,7 @@ class MealCard extends ConsumerWidget {
     // Вычисляем какой размер показать
     late String displayPortion;
     if (portionSizes.isNotEmpty && selectedPortionIndex < portionSizes.length) {
-      final selectedPortion = portionSizes[selectedPortionIndex] as Map<String, dynamic>;
+      final selectedPortion = portionSizes[selectedPortionIndex];
       final grams = selectedPortion['grams'] as String? ?? portion;
       final label = selectedPortion['label'] as String? ?? '';
       displayPortion = '$grams $label';
@@ -266,24 +265,22 @@ class StatBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: AppColors.greenSurface,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          children: [
-            Text(value,
-                style: GoogleFonts.rubik(
-                    fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.greenMid)),
-            const SizedBox(height: 2),
-            Text(label,
-                style: GoogleFonts.rubik(fontSize: 11, color: AppColors.textMuted),
-                textAlign: TextAlign.center),
-          ],
-        ),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      decoration: BoxDecoration(
+        color: AppColors.greenSurface,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          Text(value,
+              style: GoogleFonts.rubik(
+                  fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.greenMid)),
+          const SizedBox(height: 2),
+          Text(label,
+              style: GoogleFonts.rubik(fontSize: 11, color: AppColors.textMuted),
+              textAlign: TextAlign.center),
+        ],
       ),
     );
   }

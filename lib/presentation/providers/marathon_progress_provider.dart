@@ -3,8 +3,37 @@ import 'package:beauty_body/presentation/providers/auth_provider.dart';
 import 'package:beauty_body/presentation/providers/repository_providers.dart';
 import 'package:beauty_body/domain/entities/marathon_progress_entity.dart';
 
+/// Провайдер для инициализации прогресса марафона (выполняется один раз)
+final _initializeMarathonProvider = FutureProvider<void>((ref) async {
+  final authState = ref.watch(authStateProvider);
+  
+  await authState.maybeWhen(
+    data: (user) async {
+      if (user == null) return;
+      final userId = user.uid;
+      final repository = ref.watch(marathonProgressRepositoryProvider);
+      
+      try {
+        final existingProgress = await repository.getMarathonProgress(userId);
+        if (existingProgress == null) {
+          print('📍 Инициализирую прогресс марафона для $userId');
+          await repository.initializeMarathonProgress(userId);
+          print('✅ Прогресс инициализирован');
+        }
+      } catch (e) {
+        print('⚠️  Ошибка при инициализации: $e');
+      }
+    },
+    orElse: () async {},
+  );
+});
+
 /// Текущий прогресс марафона пользователя (в реальном времени)
+/// Гарантирует инициализацию перед возвращением данных
 final marathonProgressProvider = StreamProvider<MarathonProgressEntity?>((ref) {
+  // Сначала убеждаемся, что инициализация выполнена
+  final _ = ref.watch(_initializeMarathonProvider);
+  
   final authState = ref.watch(authStateProvider);
   
   return authState.maybeWhen(

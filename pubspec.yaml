@@ -43,12 +43,15 @@ dependencies:
   firebase_auth: ^5.2.0
   cloud_firestore: ^5.4.0
   firebase_messaging: ^15.1.0
-  firebase_storage: ^12.2.0
   loading_animation_widget: ^1.3.0
   
   # State Management - Riverpod
   flutter_riverpod: ^2.4.0
   riverpod_annotation: ^2.3.0
+  
+  # Image picking and storage
+  image_picker: ^1.0.0
+  path_provider: ^2.1.0
   
   # Code Generation
   freezed_annotation: ^2.1.0

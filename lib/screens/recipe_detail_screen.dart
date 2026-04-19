@@ -445,14 +445,10 @@ class RecipeDetailScreen extends ConsumerWidget {
                     child: ElevatedButton.icon(
                       onPressed: () async {
                         try {
-                          // Добавляем блюдо в съеденные локально
-                          final currentMeals = ref.read(eatenMealsProvider);
-                          ref.read(eatenMealsProvider.notifier).state = {
-                            ...currentMeals,
-                            mealId: DateTime.now(),
-                          };
+                          // Добавляем блюдо в съеденные и сохраняем в Firebase
+                          ref.read(eatenMealsProvider.notifier).addMeal(mealId);
                           
-                          // Сохраняем в Firebase
+                          // Также сохраняем в Firebase
                           final user = ref.read(authStateProvider).valueOrNull;
                           if (user != null) {
                             await FirebaseFirestore.instance

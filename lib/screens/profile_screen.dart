@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import '../theme.dart';
 import '../widgets/widgets.dart';
 import '../presentation/providers/auth_provider.dart';
+import '../presentation/providers/marathon_progress_provider.dart';
+import '../presentation/providers/progress_provider.dart';
+import '../presentation/providers/profile_picture_provider.dart';
 import 'shopping_list_screen.dart';
 import 'notifications_screen.dart';
 import 'community_screen.dart';
@@ -13,9 +17,20 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Получаем данные пользователя и прогресса
+    final userAsync = ref.watch(authStateProvider);
+    final marathonProgressAsync = ref.watch(marathonProgressProvider);
+    final progressHistoryAsync = ref.watch(progressHistoryProvider);
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
+      body: userAsync.when(
+        data: (user) {
+          final displayName = user?.displayName ?? 'Пользователь';
+          final nameParts = displayName.split(' ');
+          final initials = nameParts.take(2).map((p) => p.isNotEmpty ? p[0] : '').join('').toUpperCase();
+          
+          return CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 200,
@@ -42,56 +57,101 @@ class ProfileScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 40),
-                      Container(
-                        width: 72,
-                        height: 72,
-                        decoration: BoxDecoration(
-                          color: AppColors.greenCard,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.white, width: 3),
-                        ),
-                        child: Center(
-                          child: Text(
-                            'АН',
-                            style: GoogleFonts.rubik(
-                              fontSize: 22,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.greenDark,
-                            ),
-                          ),
-                        ),
-                      ),
+                      _ProfilePictureWidget(initials: initials),
                       const SizedBox(height: 10),
-                      Text(
-                        'Анна Новикова',
-                        style: GoogleFonts.rubik(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          AppPill(
-                            'Этап 1',
-                            bg: Color(0x33FFFFFF),
-                            textColor: AppColors.white,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              displayName,
+                              style: GoogleFonts.rubik(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.white,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          SizedBox(width: 6),
-                          AppPill(
-                            'Неделя 2',
-                            bg: Color(0x33FFFFFF),
-                            textColor: AppColors.white,
-                          ),
-                          SizedBox(width: 6),
-                          AppPill(
-                            '8 дней',
-                            bg: Color(0x33FFFFFF),
-                            textColor: AppColors.white,
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () => _showEditNameDialog(context, ref, displayName),
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.edit_rounded,
+                                color: AppColors.white,
+                                size: 16,
+                              ),
+                            ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 4),
+                      marathonProgressAsync.when(
+                        data: (progress) {
+                          final stageName = progress?.stageName ?? 'Этап 1';
+                          final week = progress?.currentWeek ?? 1;
+                          final daysLeft = progress?.remainingDays ?? 0;
+                          
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              AppPill(
+                                stageName,
+                                bg: const Color(0x33FFFFFF),
+                                textColor: AppColors.white,
+                              ),
+                              const SizedBox(width: 6),
+                              AppPill(
+                                'Неделя $week',
+                                bg: const Color(0x33FFFFFF),
+                                textColor: AppColors.white,
+                              ),
+                              const SizedBox(width: 6),
+                              AppPill(
+                                '$daysLeft дней',
+                                bg: const Color(0x33FFFFFF),
+                                textColor: AppColors.white,
+                              ),
+                            ],
+                          );
+                        },
+                        loading: () => const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                        error: (_, __) => Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            AppPill(
+                              'Этап -',
+                              bg: Color(0x33FFFFFF),
+                              textColor: AppColors.white,
+                            ),
+                            SizedBox(width: 6),
+                            AppPill(
+                              'Неделя -',
+                              bg: Color(0x33FFFFFF),
+                              textColor: AppColors.white,
+                            ),
+                            SizedBox(width: 6),
+                            AppPill(
+                              '- дней',
+                              bg: Color(0x33FFFFFF),
+                              textColor: AppColors.white,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -104,14 +164,53 @@ class ProfileScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Row(
-                    children: const [
-                      StatBox(value: '72.0', label: 'Начальный вес'),
-                      SizedBox(width: 8),
-                      StatBox(value: '68.5', label: 'Текущий вес'),
-                      SizedBox(width: 8),
-                      StatBox(value: '-3.5', label: 'Минус кг'),
-                    ],
+                  // Статистика веса
+                  progressHistoryAsync.when(
+                    data: (progressList) {
+                      if (progressList.isEmpty) {
+                        return Row(
+                          children: const [
+                            Expanded(child: StatBox(value: '-', label: 'Начальный вес')),
+                            SizedBox(width: 8),
+                            Expanded(child: StatBox(value: '-', label: 'Текущий вес')),
+                            SizedBox(width: 8),
+                            Expanded(child: StatBox(value: '-', label: 'Минус кг')),
+                          ],
+                        );
+                      }
+
+                      final firstWeight = progressList.first.weight;
+                      final currentWeight = progressList.last.weight;
+                      final weightLost = (firstWeight - currentWeight).abs();
+
+                      return Row(
+                        children: [
+                          Expanded(child: StatBox(value: firstWeight.toStringAsFixed(1), label: 'Начальный вес')),
+                          const SizedBox(width: 8),
+                          Expanded(child: StatBox(value: currentWeight.toStringAsFixed(1), label: 'Текущий вес')),
+                          const SizedBox(width: 8),
+                          Expanded(child: StatBox(value: '-${weightLost.toStringAsFixed(1)}', label: 'Минус кг')),
+                        ],
+                      );
+                    },
+                    loading: () => Row(
+                      children: const [
+                        Expanded(child: StatBox(value: '...', label: 'Начальный вес')),
+                        SizedBox(width: 8),
+                        Expanded(child: StatBox(value: '...', label: 'Текущий вес')),
+                        SizedBox(width: 8),
+                        Expanded(child: StatBox(value: '...', label: 'Минус кг')),
+                      ],
+                    ),
+                    error: (_, __) => Row(
+                      children: const [
+                        Expanded(child: StatBox(value: 'Ошибка', label: 'Начальный вес')),
+                        SizedBox(width: 8),
+                        Expanded(child: StatBox(value: 'Ошибка', label: 'Текущий вес')),
+                        SizedBox(width: 8),
+                        Expanded(child: StatBox(value: 'Ошибка', label: 'Минус кг')),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _ProfileSettingsSection(ref: ref, context: context),
@@ -129,8 +228,89 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
         ],
+      );
+        },
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        error: (error, stackTrace) => Center(
+          child: Text('Ошибка загрузки профиля: $error'),
+        ),
       ),
     );
+  }
+
+  /// Диалог для редактирования имени пользователя
+  static Future<void> _showEditNameDialog(
+    BuildContext context,
+    WidgetRef ref,
+    String currentName,
+  ) async {
+    final nameController = TextEditingController(text: currentName);
+    
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Изменить имя'),
+        content: TextField(
+          controller: nameController,
+          decoration: InputDecoration(
+            hintText: 'Введите новое имя',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+          maxLines: 1,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Отмена'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final newName = nameController.text.trim();
+              if (newName.isNotEmpty && newName != currentName) {
+                try {
+                  // Обновляем профиль пользователя
+                  await ref.read(authStateNotifierProvider.notifier).updateUserProfile(
+                    displayName: newName,
+                  );
+                  
+                  if (context.mounted) {
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Имя успешно обновлено'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Ошибка: $e'),
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                }
+              } else {
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text(
+              'Сохранить',
+              style: TextStyle(color: AppColors.greenMid),
+            ),
+          ),
+        ],
+      ),
+    );
+    nameController.dispose();
   }
 }
 
@@ -521,5 +701,188 @@ class _ProfileSwitchState extends State<_ProfileSwitch> {
         ],
       ),
     );
+  }
+}
+
+/// Виджет для отображения и редактирования профильной картинки
+class _ProfilePictureWidget extends ConsumerWidget {
+  final String initials;
+
+  const _ProfilePictureWidget({required this.initials});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profilePictureAsync = ref.watch(profilePictureProvider);
+
+    return GestureDetector(
+      onTap: () => _showPictureOptionsDialog(context, ref),
+      child: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: AppColors.greenCard,
+              shape: BoxShape.circle,
+              // border: Border.all(color: AppColors.white, width: 3),
+            ),
+            child: profilePictureAsync.when(
+              data: (pictureFile) {
+                if (pictureFile != null) {
+                  // Показываем загруженную картинку
+                  return ClipOval(
+                    child: Image.file(
+                      pictureFile,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Center(
+                        child: Text(
+                          initials,
+                          style: GoogleFonts.rubik(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.greenDark,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  // Показываем инициалы
+                  return Center(
+                    child: Text(
+                      initials,
+                      style: GoogleFonts.rubik(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.greenDark,
+                      ),
+                    ),
+                  );
+                }
+              },
+              loading: () => Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor:
+                        AlwaysStoppedAnimation(AppColors.greenDark),
+                  ),
+                ),
+              ),
+              error: (_, __) => Center(
+                child: Text(
+                  initials,
+                  style: GoogleFonts.rubik(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.greenDark,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Иконка камеры
+          Container(
+            width: 24,
+            height: 24,
+            decoration: const BoxDecoration(
+              color: AppColors.greenMid,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                )
+              ],
+            ),
+            child: const Icon(
+              Icons.camera_alt_rounded,
+              color: AppColors.white,
+              size: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPictureOptionsDialog(BuildContext context, WidgetRef ref) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Загрузить фото'),
+        content: const Text('Выберите источник фотографии'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _pickAndUploadImage(context, ref, ImageSource.camera);
+            },
+            child: const Text('📷 Камера'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _pickAndUploadImage(context, ref, ImageSource.gallery);
+            },
+            child: const Text('🖼️ Галерея'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Отмена'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickAndUploadImage(
+    BuildContext context,
+    WidgetRef ref,
+    ImageSource source,
+  ) async {
+    try {
+      // Выбираем картинку
+      final imageAsync = await ref
+          .read(pickProfilePictureProvider(source).future);
+      
+      if (imageAsync == null) return;
+
+      // Показываем индикатор загрузки
+      if (!context.mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⏳ Сохранение фото...'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Сохраняем локально
+      await ref
+          .read(saveProfilePictureProvider(imageAsync).future);
+
+      if (!context.mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Фото успешно сохранено'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('❌ Ошибка: $e'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 }

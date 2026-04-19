@@ -9,9 +9,9 @@ import '../presentation/providers/meal_provider.dart';
 import '../presentation/providers/progress_provider.dart';
 import '../presentation/providers/marathon_progress_provider.dart';
 import '../presentation/providers/meal_plan_provider.dart';
-import '../presentation/providers/storage_provider.dart';
 import '../presentation/providers/repository_providers.dart';
 import '../presentation/providers/eaten_meals_provider.dart';
+import '../presentation/providers/activity_provider.dart';
 import '../core/constants/sample_meals.dart';
 import 'meal_plan_screen.dart';
 import 'progress_screen.dart';
@@ -50,6 +50,9 @@ class _HomeTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Проверяем активность при открытии домашней страницы
+    final activityAsync = ref.watch(updateActivityProvider);
+    
     final authState = ref.watch(authStateProvider);
     final todayMealsAsync = ref.watch(todayMealsProvider);
     final watchProgressAsync = ref.watch(watchProgressProvider);
@@ -230,11 +233,11 @@ class _HomeTab extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
-                      'Этап 1 · Неделя 1',
+                      'Этап -',
                       style: GoogleFonts.rubik(
                         fontSize: 22,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.white,
+                        color: Colors.white54,
                       ),
                     ),
                   ),
@@ -483,31 +486,31 @@ class _HomeTab extends ConsumerWidget {
                 watchProgressAsync.when(
                   loading: () => Row(
                     children: [
-                      StatBox(value: '--', label: 'Результат'),
+                      Expanded(child: StatBox(value: '--', label: 'Результат')),
                       const SizedBox(width: 8),
-                      StatBox(value: '--', label: 'Дней'),
+                      Expanded(child: StatBox(value: '--', label: 'Дней')),
                       const SizedBox(width: 8),
-                      StatBox(value: '--', label: 'Текущий вес'),
+                      Expanded(child: StatBox(value: '--', label: 'Текущий вес')),
                     ],
                   ),
                   error: (err, stack) => Row(
                     children: [
-                      StatBox(value: '-3.5 кг', label: 'Результат'),
+                      Expanded(child: StatBox(value: '-3.5 кг', label: 'Результат')),
                       const SizedBox(width: 8),
-                      StatBox(value: '8/30', label: 'Дней'),
+                      Expanded(child: StatBox(value: '8/30', label: 'Дней')),
                       const SizedBox(width: 8),
-                      StatBox(value: '68.5', label: 'Текущий вес'),
+                      Expanded(child: StatBox(value: '68.5', label: 'Текущий вес')),
                     ],
                   ),
                   data: (progress) {
                     final weight = progress.weight;
                     return Row(
                       children: [
-                        StatBox(value: '-3.5 кг', label: 'Результат'),
+                        Expanded(child: StatBox(value: '-3.5 кг', label: 'Результат')),
                         const SizedBox(width: 8),
-                        StatBox(value: '8/30', label: 'Дней'),
+                        Expanded(child: StatBox(value: '8/30', label: 'Дней')),
                         const SizedBox(width: 8),
-                        StatBox(value: '$weight', label: 'Текущий вес'),
+                        Expanded(child: StatBox(value: '$weight', label: 'Текущий вес')),
                       ],
                     );
                   },

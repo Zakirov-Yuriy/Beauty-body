@@ -4,70 +4,101 @@ import './auth_provider.dart';
 
 /// Stream провайдер для съеденных блюд из Firebase в реальном времени
 final eatenMealsStreamProvider = StreamProvider<Map<String, DateTime>>((ref) {
-  // Получаем пользователя - если нет, возвращаем пустой поток
   final userState = ref.watch(authStateProvider);
   
-  return userState.when(
-    data: (user) {
-      if (user == null) {
-        print('⚠️ No user authenticated');
-        return Stream.value({});
-      }
-      
-      // Слушаем изменения съеденных блюд из Firebase
-      return FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('eatenMeals')
-          .snapshots()
-          .map((snapshot) {
-            final eatenMeals = <String, DateTime>{};
-            for (var doc in snapshot.docs) {
-              final data = doc.data();
-              final mealId = data['mealId'] as String?;
-              final completedAtStr = data['completedAt'] as String?;
+  // Если пользователь не загружен, возвращаем пустой stream
+  if (!userState.hasValue || userState.value == null) {
+    print('⚠️ No user authenticated');
+    return Stream.value({});
+  }
+  
+  final user = userState.value;
+  if (user == null) {
+    return Stream.value({});
+  }
+
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .collection('eatenMeals')
+      .snapshots()
+      .map((snapshot) {
+        print('📡 Stream snapshot received: ${snapshot.docs.length} documents');
+        final eatenMeals = <String, DateTime>{};
+        for (var doc in snapshot.docs) {
+          final data = doc.data();
+          final mealId = data['mealId'] as String?;
+          final completedAtStr = data['completedAt'] as String?;
+          
+          print('   Doc ${doc.id}: mealId=$mealId, completedAt=$completedAtStr');
+          
+          if (mealId != null && completedAtStr != null) {
+            try {
+              final completedAt = DateTime.parse(completedAtStr);
               
-              if (mealId != null && completedAtStr != null) {
-                try {
-                  eatenMeals[mealId] = DateTime.parse(completedAtStr);
-                } catch (e) {
-                  print('⚠️ Error parsing date for $mealId: $e');
+              // Если это mealId уже есть, берём БОЛЕЕ НОВУЮ дату
+              if (eatenMeals.containsKey(mealId)) {
+                final existingDate = eatenMeals[mealId]!;
+                if (completedAt.isAfter(existingDate)) {
+                  print('   ⬆️ Replacing $mealId with newer date: $completedAt > $existingDate');
+                  eatenMeals[mealId] = completedAt;
                 }
+              } else {
+                eatenMeals[mealId] = completedAt;
               }
+            } catch (e) {
+              print('⚠️ Error parsing date for $mealId: $e');
             }
-            
-            if (eatenMeals.isNotEmpty) {
-              print('📥 Loaded ${eatenMeals.length} eaten meals from Firebase');
-            }
-            return eatenMeals;
-          });
-    },
-    loading: () => Stream.value({}),
-    error: (err, stack) {
-      print('❌ Error loading eaten meals: $err');
-      return Stream.value({});
-    },
-  );
+          }
+        }
+        
+        if (eatenMeals.isNotEmpty) {
+          print('📥 Loaded ${eatenMeals.length} eaten meals from Firebase');
+        }
+        return eatenMeals;
+      });
 });
+
+
+/// Notifier для управления съеденными блюдами
+class EatenMealsNotifier extends StateNotifier<Map<String, DateTime>> {
+  EatenMealsNotifier() : super({});
+
+  void addMeal(String mealId) {
+    final newState = {...state, mealId: DateTime.now()};
+    state = newState;
+  }
+
+  void setMeals(Map<String, DateTime> meals) {
+    state = meals;
+  }
+
+  void removeMeal(String mealId) {
+    final newState = Map<String, DateTime>.from(state);
+    newState.remove(mealId);
+    state = newState;
+  }
+
+  void clear() {
+    state = {};
+  }
+}
 
 /// Провайдер для отслеживания съеденных блюд
-/// Хранит Map<mealId, completedAt> для блюд, которые были отмечены как съеденные
-final eatenMealsProvider = StateProvider<Map<String, DateTime>>((ref) {
-  return {};
-});
-
-/// Инициализировать съеденные блюда из Firebase
-final initEatenMealsProvider = FutureProvider<void>((ref) async {
-  // Слушаем stream и обновляем state
+final eatenMealsProvider = StateNotifierProvider<EatenMealsNotifier, Map<String, DateTime>>((ref) {
+  final notifier = EatenMealsNotifier();
+  
+  // Слушаем Firebase изменения
   ref.listen(eatenMealsStreamProvider, (previous, next) {
     next.whenData((meals) {
-      ref.read(eatenMealsProvider.notifier).state = meals;
+      notifier.setMeals(meals);
     });
   });
-  print('✅ Initialized eaten meals listener');
+  
+  return notifier;
 });
 
-/// Получить список ID съеденных блюд (для обратной совместимости)
+/// Получить список ID съеденных блюд
 final eatenMealIdsProvider = Provider<Set<String>>((ref) {
   final eatenMeals = ref.watch(eatenMealsProvider);
   return eatenMeals.keys.toSet();
@@ -75,24 +106,34 @@ final eatenMealIdsProvider = Provider<Set<String>>((ref) {
 
 /// Добавляет блюдо в список съеденных
 final addEatenMealProvider = FutureProvider.family<void, String>((ref, mealId) async {
-  final currentMeals = ref.read(eatenMealsProvider);
-  ref.read(eatenMealsProvider.notifier).state = {
-    ...currentMeals,
-    mealId: DateTime.now(),
-  };
+  ref.read(eatenMealsProvider.notifier).addMeal(mealId);
+  
+  final user = ref.read(authStateProvider).valueOrNull;
+  if (user != null) {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('eatenMeals')
+        .doc(mealId)
+        .set({
+          'mealId': mealId,
+          'completedAt': DateTime.now().toIso8601String(),
+        });
+  }
 });
 
-/// Проверяет, съедено ли блюдо СЕГОДНЯ (по дате)
+/// Проверяет, съедено ли блюдо СЕГОДНЯ
 final isMealEatenProvider = Provider.family<bool, String>((ref, mealId) {
   final eatenMeals = ref.watch(eatenMealsProvider);
   final completedAt = eatenMeals[mealId];
   
-  if (completedAt == null) return false;
+  if (completedAt == null) {
+    return false;
+  }
   
-  // Проверяем, что блюдо отмечено именно СЕГОДНЯ
   final today = DateTime.now();
   final todayStart = DateTime(today.year, today.month, today.day);
-  final todayEnd = DateTime(today.year, today.month, today.day, 23, 59, 59);
+  final todayEnd = DateTime(today.year, today.month, today.day, 23, 59, 59, 999, 999);
   
   return completedAt.isAfter(todayStart) && completedAt.isBefore(todayEnd);
 });
@@ -115,8 +156,7 @@ final todayCompletedMealsCountProvider = Provider<int>((ref) {
   }).length;
 });
 
-/// Проверяет, съедено ли конкретное блюдо в конкретный день
-/// Принимает mealId и DateTime для проверки
+/// Проверяет, съедено ли блюдо в конкретный день
 final isMealEatenOnDateProvider = 
     Provider.family<bool, ({String mealId, DateTime date})>((ref, params) {
   final eatenMeals = ref.watch(eatenMealsProvider);
@@ -124,7 +164,6 @@ final isMealEatenOnDateProvider =
   
   if (completedAt == null) return false;
   
-  // Проверяем, что блюдо отмечено в указанный день
   final targetDate = params.date;
   final dayStart = DateTime(targetDate.year, targetDate.month, targetDate.day);
   final dayEnd = DateTime(targetDate.year, targetDate.month, targetDate.day, 23, 59, 59);
@@ -132,7 +171,7 @@ final isMealEatenOnDateProvider =
   return completedAt.isAfter(dayStart) && completedAt.isBefore(dayEnd);
 });
 
-/// Получить все съеденные блюда за конкретный день
+/// Получить съеденные блюда за конкретный день
 final completedMealsOnDateProvider = 
     Provider.family<Set<String>, DateTime>((ref, date) {
   final eatenMeals = ref.watch(eatenMealsProvider);
@@ -140,7 +179,6 @@ final completedMealsOnDateProvider =
   final dayStart = DateTime(date.year, date.month, date.day);
   final dayEnd = DateTime(date.year, date.month, date.day, 23, 59, 59);
   
-  // Фильтруем все блюда, которые съедены в этот день
   return eatenMeals.entries
       .where((entry) {
         final completedAt = entry.value;
@@ -151,8 +189,7 @@ final completedMealsOnDateProvider =
 });
 
 /// Количество съеденных блюд за конкретный день
-final completedMealsCountOnDateProvider = 
-    Provider.family<int, DateTime>((ref, date) {
+final completedMealsCountOnDateProvider = Provider.family<int, DateTime>((ref, date) {
   final completedMeals = ref.watch(completedMealsOnDateProvider(date));
   return completedMeals.length;
 });

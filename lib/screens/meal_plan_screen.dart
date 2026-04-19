@@ -18,9 +18,6 @@ class MealPlanScreen extends ConsumerWidget {
     // Watch the selected meal plan with actual meals
     final selectedPlanAsync = ref.watch(selectedMealPlanProvider);
 
-    // Инициализируем съеденные блюда из Firebase
-    ref.watch(initEatenMealsProvider);
-
     // Получаем ID съеденных блюд
     final eatenMealIds = ref.watch(eatenMealIdsProvider);
 

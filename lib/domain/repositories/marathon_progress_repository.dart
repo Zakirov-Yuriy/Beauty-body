@@ -23,4 +23,8 @@ abstract class MarathonProgressRepository {
 
   /// Сбросить прогресс (начать с нуля)
   Future<void> resetMarathonProgress(String userId);
+
+  /// Обновить прогресс на основе прошедшего времени
+  /// Вычисляет текущий день/неделю/этап от startDate и обновляет Firebase
+  Future<void> updateProgressBasedOnElapsedDays(String userId);
 }
