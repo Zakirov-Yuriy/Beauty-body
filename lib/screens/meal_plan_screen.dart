@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme.dart';
 import '../presentation/providers/meal_plan_provider.dart';
 import '../presentation/providers/eaten_meals_provider.dart';
+import '../presentation/providers/marathon_provider.dart';
 import '../core/utils/meal_translations.dart';
 import 'recipe_detail_screen.dart';
 
@@ -20,6 +21,9 @@ class MealPlanScreen extends ConsumerWidget {
 
     // Получаем ID съеденных блюд
     final eatenMealIds = ref.watch(eatenMealIdsProvider);
+
+    // Получаем информацию о марафоне
+    final marathonInfoAsync = ref.watch(marathonDayInfoProvider);
 
     const List<String> weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     const List<String> weekdaysFull = [
@@ -128,265 +132,400 @@ class MealPlanScreen extends ConsumerWidget {
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: List.generate(7, (i) {
-                          // Определяем какой день сегодня
-                          final now = DateTime.now();
-                          final todayWeekday =
-                              now.weekday - 1; // 0=пн, 1=вт, ..., 6=вс
-                          final isToday = i == todayWeekday;
+                        children: marathonInfoAsync.when(
+                          data: (marathonInfo) {
+                            final currentMarathonDay =
+                                marathonInfo.marathonDay;
+                            final startDate = marathonInfo.startDate;
 
-                          // Проверяем, все ли блюда за этот день съедены
-                          final dailyMealsForDay = plan?.dailyMeals[i] ?? [];
-                          final isDone =
-                              dailyMealsForDay.isNotEmpty &&
-                              dailyMealsForDay.every(
-                                (meal) => eatenMealIds.contains(meal.id),
+                            return List.generate(7, (i) {
+                              // Определяем какой день сегодня
+                              final now = DateTime.now();
+                              final todayWeekday =
+                                  now.weekday - 1; // 0=пн, 1=вт, ..., 6=вс
+                              final isToday = i == todayWeekday;
+
+                              // Проверяем, все ли блюда за этот день съедены
+                              final dailyMealsForDay = plan?.dailyMeals[i] ?? [];
+                              final isDone =
+                                  dailyMealsForDay.isNotEmpty &&
+                                  dailyMealsForDay.every(
+                                    (meal) => eatenMealIds.contains(meal.id),
+                                  );
+                              final isSelected = i == planState.selectedDay;
+
+                              // Вычисляем дату для этого дня
+                              final daysToMonday = now.weekday - 1;
+                              final mondayOfThisWeek =
+                                  now.subtract(Duration(days: daysToMonday));
+                              final weekOffset = planState.selectedWeek * 7;
+                              final dayOffset = i;
+                              final dayDate = mondayOfThisWeek.add(
+                                Duration(days: weekOffset + dayOffset),
                               );
-                          final isSelected = i == planState.selectedDay;
 
-                          return GestureDetector(
-                            onTap: () {
-                              ref
-                                  .read(mealPlanNotifierProvider.notifier)
-                                  .selectDay(i);
-                            },
-                            child: Column(
-                              children: [
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 200),
-                                  width: 36,
-                                  height: 36,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: isSelected
-                                        ? AppColors.greenMid
-                                        : isDone
-                                        ? AppColors.greenCard
-                                        : isToday
-                                        ? AppColors.greenLight
-                                        : AppColors.greenSurface,
-                                    border: isToday && !isSelected
-                                        ? Border.all(
-                                            color: AppColors.greenMid,
-                                            width: 2,
-                                          )
-                                        : null,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      weekdays[i],
-                                      style: GoogleFonts.rubik(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w700,
-                                        color:
-                                            isSelected ||
-                                                (isToday && !isSelected)
-                                            ? AppColors.white
-                                            : isDone
+                              // Простая проверка доступности дня:
+                              // День доступен если он >= дате старта марафона
+                              final isDayAvailable = dayDate.isAfter(
+                                    startDate.subtract(const Duration(days: 1)),
+                                  ) &&
+                                  dayDate.isBefore(
+                                    startDate.add(const Duration(days: 42)),
+                                  ) &&
+                                  dayDate.isBefore(
+                                    now.add(const Duration(days: 1)),
+                                  );
+
+                              return GestureDetector(
+                                onTap: isDayAvailable
+                                    ? () {
+                                        ref
+                                            .read(mealPlanNotifierProvider
+                                                .notifier)
+                                            .selectDay(i);
+                                      }
+                                    : null,
+                                child: Column(
+                                  children: [
+                                    AnimatedContainer(
+                                      duration: const Duration(
+                                          milliseconds: 200),
+                                      width: 36,
+                                      height: 36,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: !isDayAvailable
+                                            ? AppColors.darkRed
+                                            : isSelected
                                             ? AppColors.greenMid
-                                            : AppColors.textMuted,
+                                            : isDone
+                                            ? AppColors.greenCard
+                                            : isToday
+                                            ? AppColors.greenLight
+                                            : AppColors.greenSurface,
+                                        border: isToday && !isSelected
+                                            ? Border.all(
+                                                color:
+                                                    AppColors.greenMid,
+                                                width: 2,
+                                              )
+                                            : null,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          weekdays[i],
+                                          style: GoogleFonts.rubik(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w700,
+                                            color: !isDayAvailable
+                                                        ? AppColors.white
+                                                    : isSelected ||
+                                                        (isToday &&
+                                                            !isSelected)
+                                                    ? AppColors.white
+                                                    : isDone
+                                                    ? AppColors.greenMid
+                                                    : AppColors.textMuted,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    if (isDone && isDayAvailable) ...[
+                                      const SizedBox(height: 3),
+                                      const Icon(
+                                        Icons.check_rounded,
+                                        size: 10,
+                                        color: AppColors.greenLight,
+                                      ),
+                                    ],
+                                  ],
                                 ),
-                                if (isDone) ...[
-                                  const SizedBox(height: 3),
-                                  const Icon(
-                                    Icons.check_rounded,
-                                    size: 10,
-                                    color: AppColors.greenLight,
-                                  ),
-                                ],
-                              ],
+                              );
+                            });
+                          },
+                          loading: () => List.generate(
+                            7,
+                            (i) => const SizedBox(
+                              width: 36,
+                              height: 36,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
                             ),
-                          );
-                        }),
+                          ),
+                          error: (err, st) => List.generate(
+                            7,
+                            (i) => const Icon(Icons.error),
+                          ),
+                        ),
                       ),
                     ),
                     // Daily meals list - показываем ТОЛЬКО если выбран день
                     Expanded(
-                      child: plan == null
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.calendar_today_rounded,
-                                    color: AppColors.textMuted,
-                                    size: 48,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'План не найден',
-                                    style: GoogleFonts.rubik(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textDark,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : planState.selectedDay ==
-                                -1 // Если день не выбран
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.touch_app_rounded,
-                                    color: AppColors.greenLight,
-                                    size: 48,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    'Выберите день недели',
-                                    style: GoogleFonts.rubik(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.textDark,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : ListView(
-                              padding: const EdgeInsets.all(16),
-                              children: [
-                                ...(() {
-                                  // Рассчитываем дату на основе выбранной недели и дня
-                                  final now = DateTime.now();
+                      child: marathonInfoAsync.when(
+                        data: (marathonInfo) {
+                          final currentMarathonDay =
+                              marathonInfo.marathonDay;
 
-                                  // Находим понедельник текущей недели
-                                  // weekday: 1=пн, 2=вт, ..., 7=вс
-                                  final daysToMonday = now.weekday - 1;
-                                  final mondayOfThisWeek = now.subtract(
-                                    Duration(days: daysToMonday),
-                                  );
+                          // Проверяем доступность выбранного дня
+                          bool isSelectedDayAvailable = true;
+                          if (planState.selectedDay != -1) {
+                            // Вычисляем дату выбранного дня
+                            final now = DateTime.now();
+                            final daysToMonday = now.weekday - 1;
+                            final mondayOfThisWeek = now.subtract(
+                              Duration(days: daysToMonday),
+                            );
+                            final weekOffset =
+                                planState.selectedWeek * 7;
+                            final dayOffset = planState.selectedDay;
+                            final selectedDayDate =
+                                mondayOfThisWeek.add(
+                              Duration(
+                                  days: weekOffset + dayOffset),
+                            );
 
-                                  // Рассчитываем итоговую дату
-                                  final weekOffset =
-                                      (planState.selectedWeek) * 7;
-                                  final dayOffset = planState.selectedDay;
-                                  final selectedDate = mondayOfThisWeek.add(
-                                    Duration(days: weekOffset + dayOffset),
-                                  );
+                            // Получаем день марафона для выбранной даты
+                            final marathonDayForSelectedAsync = ref
+                                .watch(marathonDayForDateProvider(
+                              selectedDayDate,
+                            ));
 
-                                  // Месяцы на русском
-                                  const monthsRu = [
-                                    'января',
-                                    'февраля',
-                                    'марта',
-                                    'апреля',
-                                    'мая',
-                                    'июня',
-                                    'июля',
-                                    'августа',
-                                    'сентября',
-                                    'октября',
-                                    'ноября',
-                                    'декабря',
-                                  ];
+                            isSelectedDayAvailable =
+                                marathonDayForSelectedAsync.maybeWhen(
+                              data: (marathonDay) =>
+                                  marathonDay <= currentMarathonDay,
+                              orElse: () => true,
+                            );
+                          }
 
-                                  final dateStr =
-                                      '${selectedDate.day} ${monthsRu[selectedDate.month - 1]} ${selectedDate.year}';
-
-                                  return [
-                                    Text(
-                                      '${weekdaysFull[planState.selectedDay]} · $dateStr',
-                                      style: GoogleFonts.rubik(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColors.greenDark,
+                          return plan == null
+                              ? Center(
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_today_rounded,
+                                        color: AppColors.textMuted,
+                                        size: 48,
                                       ),
-                                    ),
-                                  ];
-                                }()),
-                                const SizedBox(height: 12),
-                                ...(() {
-                                  final dailyMeals =
-                                      plan.dailyMeals[planState.selectedDay] ??
-                                      [];
-                                  if (dailyMeals.isEmpty) {
-                                    return [
-                                      Center(
-                                        child: Text(
-                                          'Приемы пищи не добавлены',
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'План не найден',
+                                        style: GoogleFonts.rubik(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textDark,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : planState.selectedDay ==
+                                    -1 // Если день не выбран
+                              ? Center(
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.touch_app_rounded,
+                                        color: AppColors.greenLight,
+                                        size: 48,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Выберите день недели',
+                                        style: GoogleFonts.rubik(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textDark,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : !isSelectedDayAvailable
+                              ? Center(
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.lock_clock_rounded,
+                                        color: AppColors.darkRed,
+                                        size: 48,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'День еще не начался',
+                                        style: GoogleFonts.rubik(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.textDark,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Ваш марафон начался позже',
+                                        style: GoogleFonts.rubik(
+                                          fontSize: 12,
+                                          color: AppColors.textMuted,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : ListView(
+                                  padding: const EdgeInsets.all(16),
+                                  children: [
+                                    ...(() {
+                                      // Рассчитываем дату на основе выбранной недели и дня
+                                      final now = DateTime.now();
+
+                                      // Находим понедельник текущей недели
+                                      // weekday: 1=пн, 2=вт, ..., 7=вс
+                                      final daysToMonday = now.weekday - 1;
+                                      final mondayOfThisWeek = now.subtract(
+                                        Duration(days: daysToMonday),
+                                      );
+
+                                      // Рассчитываем итоговую дату
+                                      final weekOffset =
+                                          (planState.selectedWeek) * 7;
+                                      final dayOffset = planState.selectedDay;
+                                      final selectedDate = mondayOfThisWeek.add(
+                                        Duration(
+                                            days: weekOffset + dayOffset),
+                                      );
+
+                                      // Месяцы на русском
+                                      const monthsRu = [
+                                        'января',
+                                        'февраля',
+                                        'марта',
+                                        'апреля',
+                                        'мая',
+                                        'июня',
+                                        'июля',
+                                        'августа',
+                                        'сентября',
+                                        'октября',
+                                        'ноября',
+                                        'декабря',
+                                      ];
+
+                                      final dateStr =
+                                          '${selectedDate.day} ${monthsRu[selectedDate.month - 1]} ${selectedDate.year}';
+
+                                      return [
+                                        Text(
+                                          '${weekdaysFull[planState.selectedDay]} · $dateStr',
                                           style: GoogleFonts.rubik(
-                                            fontSize: 13,
-                                            color: AppColors.textMuted,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.greenDark,
                                           ),
                                         ),
-                                      ),
-                                    ];
-                                  }
-                                  return dailyMeals.asMap().entries.map((
-                                    entry,
-                                  ) {
-                                    final meal = entry.value;
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 10,
-                                      ),
-                                      child: GestureDetector(
-                                        onTap: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) =>
-                                                RecipeDetailScreen(meal: meal),
-                                          ),
-                                        ),
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: AppColors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              14,
-                                            ),
-                                            border: Border.all(
-                                              color: AppColors.greenBorder,
-                                              width: 0.5,
+                                      ];
+                                    }()),
+                                    const SizedBox(height: 12),
+                                    ...(() {
+                                      final dailyMeals =
+                                          plan.dailyMeals[planState.selectedDay] ??
+                                          [];
+                                      if (dailyMeals.isEmpty) {
+                                        return [
+                                          Center(
+                                            child: Text(
+                                              'Приемы пищи не добавлены',
+                                              style: GoogleFonts.rubik(
+                                                fontSize: 13,
+                                                color:
+                                                    AppColors.textMuted,
+                                              ),
                                             ),
                                           ),
-                                          padding: const EdgeInsets.all(14),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 52,
-                                                height: 52,
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      mealColors[entry.key % 4],
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
+                                        ];
+                                      }
+                                      return dailyMeals.asMap().entries.map((
+                                        entry,
+                                      ) {
+                                        final meal = entry.value;
+                                        return Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 10,
+                                          ),
+                                          child: GestureDetector(
+                                            onTap: () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) =>
+                                                    RecipeDetailScreen(
+                                                        meal: meal),
+                                              ),
+                                            ),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: AppColors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  14,
                                                 ),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                  child:
-                                                      meal
+                                                border: Border.all(
+                                                  color:
+                                                      AppColors.greenBorder,
+                                                  width: 0.5,
+                                                ),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.all(14),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    width: 52,
+                                                    height: 52,
+                                                    decoration:
+                                                        BoxDecoration(
+                                                      color: mealColors[
+                                                          entry.key % 4],
+                                                      borderRadius:
+                                                          BorderRadius
+                                                              .circular(12),
+                                                    ),
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius
+                                                              .circular(12),
+                                                      child: meal
                                                           .imageAssetPath
                                                           .isEmpty
-                                                      ? Center(
-                                                          child: Text(
-                                                            meal.emoji,
-                                                            style:
-                                                                const TextStyle(
-                                                                  fontSize: 26,
+                                                          ? Center(
+                                                              child: Text(
+                                                                meal.emoji,
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontSize:
+                                                                      26,
                                                                 ),
-                                                          ),
-                                                        )
-                                                      : Image.asset(
-                                                          meal.imageAssetPath,
-                                                          fit: BoxFit.cover,
-                                                          errorBuilder:
-                                                              (
+                                                              ),
+                                                            )
+                                                          : Image.asset(
+                                                              meal
+                                                                  .imageAssetPath,
+                                                              fit: BoxFit
+                                                                  .cover,
+                                                              errorBuilder:
+                                                                  (
                                                                 context,
                                                                 error,
                                                                 stackTrace,
                                                               ) {
                                                                 return Center(
                                                                   child: Text(
-                                                                    meal.emoji,
+                                                                    meal
+                                                                        .emoji,
                                                                     style: const TextStyle(
                                                                       fontSize:
                                                                           26,
@@ -394,69 +533,81 @@ class MealPlanScreen extends ConsumerWidget {
                                                                   ),
                                                                 );
                                                               },
+                                                            ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 14),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          translateMealType(
+                                                            meal.type,
+                                                          ),
+                                                          style: GoogleFonts
+                                                              .rubik(
+                                                            fontSize: 11,
+                                                            color: AppColors
+                                                                .textMuted,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500,
+                                                          ),
                                                         ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 14),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      translateMealType(
-                                                        meal.type,
-                                                      ),
-                                                      style: GoogleFonts.rubik(
-                                                        fontSize: 11,
-                                                        color:
-                                                            AppColors.textMuted,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 2),
-                                                    Text(
-                                                      meal.name,
-                                                      style: GoogleFonts.rubik(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            AppColors.textDark,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 3),
-                                                    Text(
-                                                      'Порция: ${meal.portion}',
-                                                      style: GoogleFonts.rubik(
-                                                        fontSize: 12,
-                                                        color:
-                                                            AppColors.textMuted,
-                                                      ),
-                                                    ),
-                                                    if (meal
-                                                        .extra
-                                                        .isNotEmpty) ...[
-                                                      const SizedBox(height: 4),
-                                                      Container(
-                                                        padding:
-                                                            const EdgeInsets.symmetric(
+                                                        const SizedBox(
+                                                            height: 2),
+                                                        Text(
+                                                          meal.name,
+                                                          style: GoogleFonts
+                                                              .rubik(
+                                                            fontSize: 15,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600,
+                                                            color: AppColors
+                                                                .textDark,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 3),
+                                                        Text(
+                                                          'Порция: ${meal.portion}',
+                                                          style: GoogleFonts
+                                                              .rubik(
+                                                            fontSize: 12,
+                                                            color: AppColors
+                                                                .textMuted,
+                                                          ),
+                                                        ),
+                                                        if (meal.extra
+                                                            .isNotEmpty) ...[
+                                                          const SizedBox(
+                                                              height: 4),
+                                                          Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
                                                               horizontal: 8,
                                                               vertical: 3,
                                                             ),
-                                                        decoration: BoxDecoration(
-                                                          color: AppColors
-                                                              .greenCard,
-                                                          borderRadius:
-                                                              BorderRadius.circular(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: AppColors
+                                                                  .greenCard,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
                                                                 6,
                                                               ),
-                                                        ),
-                                                        child: Text(
-                                                          '+ ${meal.extra.replaceAll('\n', ', ')}',
-                                                          style:
-                                                              GoogleFonts.rubik(
+                                                            ),
+                                                            child: Text(
+                                                              '+ ${meal.extra.replaceAll('\n', ', ')}',
+                                                              style:
+                                                                  GoogleFonts
+                                                                      .rubik(
                                                                 fontSize: 10,
                                                                 color: AppColors
                                                                     .greenMid,
@@ -464,25 +615,41 @@ class MealPlanScreen extends ConsumerWidget {
                                                                     FontWeight
                                                                         .w500,
                                                               ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ],
-                                                ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const Icon(
+                                                    Icons.chevron_right_rounded,
+                                                    color:
+                                                        AppColors.textMuted,
+                                                  ),
+                                                ],
                                               ),
-                                              const Icon(
-                                                Icons.chevron_right_rounded,
-                                                color: AppColors.textMuted,
-                                              ),
-                                            ],
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList();
-                                }()),
-                              ],
+                                        );
+                                      }).toList();
+                                    }()),
+                                  ],
+                                );
+                        },
+                        loading: () => const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.greenMid,
+                          ),
+                        ),
+                        error: (err, st) => Center(
+                          child: Text(
+                            'Ошибка: $err',
+                            style: GoogleFonts.rubik(
+                              color: AppColors.textMuted,
                             ),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 );

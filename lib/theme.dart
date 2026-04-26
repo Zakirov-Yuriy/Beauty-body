@@ -17,6 +17,7 @@ class AppColors {
 
   static const Color orange = Color(0xFFE65100);
   static const Color orangeLight = Color(0xFFFFF3E0);
+  static const Color darkRed = Color(0xFFD32F2F);
 
   // Meal type colors
   static const Color breakfastBg = Color(0xFFFFE4B0);
